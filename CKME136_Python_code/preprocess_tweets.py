@@ -13,43 +13,87 @@ def subset_tweets(tweet_file):
     Extracts info from json file of twitter data, and subsets
     based on english language and presence of image url
     :param tweet_file: json file
-    :return:
+    :return tweets: list of tweets as dictionary
     """
     tweets = []
-
-    # FOR TESTING - DELETE
-    x = 0
     for line in tweet_file:
         try:
             curr_tweet = json.loads(line)
-            print(curr_tweet)
-
-            # FOR TESTING - DELETE
-            x += 1
-            if x > 4:
-                break
+            if decide_to_include_tweet(curr_tweet):
+                tweets.append(curr_tweet)
         except:
             pass
     return tweets
 
 
-def parse_tweets(tweet_file):
+def decide_to_include_tweet(tweet):
     """
-    extracts info from file of tweets into a list
-    returns a list with one dictionary per tweet
+    helper function setting criteria as to whether to include a tweet in
+    list to be processed
+    :param tweet: dictionary
+    :return: boolean
     """
-    tweets = []
-    for line in tweet_file:
-        try:
-            tweets.append(json.loads(line))
-        except:
-            pass
-    return tweets
+    if 'lang' in tweet and tweet['lang'] == 'en':
+        if 'text' in tweet and 'extended_entities' in tweet:
+            return True
+    return False
+
+
+def image_is_original(tweet):
+    """
+    Return boolean as to whether an image is retweeted
+    :param tweet: dictionary
+    :return: boolean
+    """
+    # return 'source_user_id_str' in tweet['extended_entities']['media'][0]
+    return not tweet['text'][:2] == 'RT'
+
+def count_media_types(tweet_list, print_results=False):
+    """
+    Calculates number of different types of media files linked in tweets
+    Prints results and returns dictionary of counts
+    :param tweet_list: list
+    :param print_results: Boolean as to whether to print results or not
+    :return:
+    """
+    # The dictionary with media information is
+    # tweet['extended_entities']['media'][0]
+    all_media_types = {}
+    for tweet in tweet_list:
+        media_type = tweet['extended_entities']['media'][0]['media_url'][-3:]
+        if media_type in all_media_types:
+            all_media_types[media_type] += 1
+        else:
+            all_media_types[media_type] = 1
+    if print_results:
+        for key in all_media_types:
+            print(key + ': ' + str(all_media_types[key]))
+    return all_media_types
 
 
 tweet_file = open(TWEET_FILE_PATH + TWEET_FILE)
-# This works but gives all data
-# tweet_list = parse_tweets(tweet_file)
-# This is a work in progress but is designed to filter down to tweets we want
-tweet_list2 = subset_tweets(tweet_file)
+tweet_list = subset_tweets(tweet_file)
 tweet_file.close()
+
+# See what we have
+print('Number of tweets with images: ' + str(len(tweet_list)))
+print('image type breakdown')
+all_media_types = count_media_types(tweet_list, True)
+print()
+
+# does id == id_str??
+matching_ids = 0
+for tweet in tweet_list:
+    if tweet['id'] == int(tweet['id_str']):
+        matching_ids += 1
+print('Pct matching ids: ' + str(matching_ids / len(tweet_list)) + '\n')
+
+# How do we find retweet images vs. original images?
+original_count = 0
+for tweet in tweet_list[:100]:
+    original_count += image_is_original(tweet)
+    if image_is_original(tweet):
+        for key in tweet:
+            print(key + ': ' + str(tweet[key]))
+        print()
+print(original_count)
