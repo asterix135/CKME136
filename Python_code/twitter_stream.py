@@ -10,8 +10,6 @@ import urllib2 as urllib
 import twitter_vals as tv
 
 
-# See assignment1.html instructions or README for how to get these credentials
-
 api_key = tv.api_key
 api_secret = tv.api_secret
 access_token_key = tv.access_token_key
@@ -19,7 +17,7 @@ access_token_secret = tv.access_token_secret
 
 _debug = 0
 
-oauth_token    = oauth.Token(key=access_token_key, secret=access_token_secret)
+oauth_token = oauth.Token(key=access_token_key, secret=access_token_secret)
 oauth_consumer = oauth.Consumer(key=api_key, secret=api_secret)
 
 signature_method_hmac_sha1 = oauth.SignatureMethod_HMAC_SHA1()

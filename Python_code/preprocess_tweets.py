@@ -4,8 +4,9 @@ Routines to subset to english tweets that contain original image links
 import json
 
 
-TWEET_FILE_PATH = '/Users/christophergraham/Documents/School/Ryerson_program/CKME136/Data/'
-TWEET_FILE = 'output_jan25.txt'
+#TWEET_FILE_PATH = '/Users/christophergraham/Documents/School/Ryerson_program/CKME136/Data/'
+TWEET_FILE_PATH = '/Users/chris/Documents/code/misc/CKME136/DATA/'
+TWEET_FILE = 'jan25_2.txt'
 
 
 def subset_tweets(tweet_file):
@@ -71,33 +72,37 @@ def count_media_types(tweet_list, print_results=False):
     return all_media_types
 
 
-tweet_file = open(TWEET_FILE_PATH + TWEET_FILE)
-tweet_list = subset_tweets(tweet_file)
-tweet_file.close()
+def exploratory():
+    tweet_file = open(TWEET_FILE_PATH + TWEET_FILE)
+    tweet_list = subset_tweets(tweet_file)
+    tweet_file.close()
 
-# See what we have
-print('Number of tweets with images: ' + str(len(tweet_list)))
-print('image type breakdown')
-all_media_types = count_media_types(tweet_list, True)
-print()
+    # See what we have
+    print('Number of tweets with images: ' + str(len(tweet_list)))
+    print('image type breakdown')
+    all_media_types = count_media_types(tweet_list, True)
+    print()
 
-# does id == id_str??
-matching_ids = 0
-for tweet in tweet_list:
-    if tweet['id'] == int(tweet['id_str']):
-        matching_ids += 1
-print('Pct matching ids: ' + str(matching_ids / len(tweet_list)) + '\n')
+    # does id == id_str??
+    matching_ids = 0
+    for tweet in tweet_list:
+        if tweet['id'] == int(tweet['id_str']):
+            matching_ids += 1
+    print('Pct matching ids: ' + str(matching_ids / len(tweet_list)) + '\n')
 
-# How do we find retweet images vs. original images?
-# Count number of tweets with original images
-original_count = 0
-for tweet in tweet_list:
-    original_count += image_is_original(tweet)
-print('Nbr tweets with original images: ' + str(original_count) + '\n')
+    # How do we find retweet images vs. original images?
+    # Count number of tweets with original images
+    original_count = 0
+    for tweet in tweet_list:
+        original_count += image_is_original(tweet)
+    print('Nbr tweets with original images: ' + str(original_count) + '\n')
 
-# Look at some of the data for tweets that have original images
-for tweet in tweet_list[:50]:
-    if image_is_original(tweet):
-        for key in tweet:
-            print(key + ': ' + str(tweet[key]))
-        print()
+    # Look at some of the data for tweets that have original images
+    for tweet in tweet_list[:50]:
+        if image_is_original(tweet):
+            for key in tweet:
+                print(key + ': ' + str(tweet[key]))
+            print()
+
+if __name__ == '__main__':
+    exploratory()
