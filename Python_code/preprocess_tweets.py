@@ -5,8 +5,7 @@ import json
 
 
 TWEET_FILE_PATH = '/Users/christophergraham/Documents/School/Ryerson_program/CKME136/Data/'
-# TWEET_FILE = 'test_output1.txt'
-TWEET_FILE = 'output_jan24.txt'
+TWEET_FILE = 'output_jan25.txt'
 
 
 def subset_tweets(tweet_file):

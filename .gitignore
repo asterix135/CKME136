@@ -6,8 +6,7 @@
 Articles/
 
 # Choose data files to ignore
-test_output1.txt
-output_jan24.txt
+
 
 # Directories to Ignore
 Research_notes/
