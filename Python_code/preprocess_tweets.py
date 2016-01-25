@@ -1,11 +1,12 @@
 """
-Routines to subset to english tweets that contain image links
+Routines to subset to english tweets that contain original image links
 """
 import json
-import pandas as pd
+
 
 TWEET_FILE_PATH = '/Users/christophergraham/Documents/School/Ryerson_program/CKME136/Data/'
-TWEET_FILE = 'test_output1.txt'
+# TWEET_FILE = 'test_output1.txt'
+TWEET_FILE = 'output_jan24.txt'
 
 
 def subset_tweets(tweet_file):
@@ -89,11 +90,15 @@ for tweet in tweet_list:
 print('Pct matching ids: ' + str(matching_ids / len(tweet_list)) + '\n')
 
 # How do we find retweet images vs. original images?
+# Count number of tweets with original images
 original_count = 0
-for tweet in tweet_list[:100]:
+for tweet in tweet_list:
     original_count += image_is_original(tweet)
+print('Nbr tweets with original images: ' + str(original_count) + '\n')
+
+# Look at some of the data for tweets that have original images
+for tweet in tweet_list[:50]:
     if image_is_original(tweet):
         for key in tweet:
             print(key + ': ' + str(tweet[key]))
         print()
-print(original_count)

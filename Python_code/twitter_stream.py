@@ -1,6 +1,14 @@
+"""
+Python2 routine to grab streamed Twitter data
+NOTE: this does not work in Python 3
+Run from command line
+python2 twitter_stream.py > output_file_name.txt
+"""
+
 import oauth2 as oauth
 import urllib2 as urllib
 import twitter_vals as tv
+
 
 # See assignment1.html instructions or README for how to get these credentials
 
