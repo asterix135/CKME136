@@ -6,13 +6,15 @@
 Articles/
 
 # Choose data files to ignore
+test_output1.txt
+output_jan24.txt
 
 # Directories to Ignore
 Research_notes/
 Class_Documents/
 
 #Twitter values
-twitter_vals.py
+Python_code/twitter_vals.py
 
 
 ############################################
