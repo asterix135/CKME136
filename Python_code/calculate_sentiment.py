@@ -2,10 +2,12 @@
 Routines to calculate sentiment for a specific tweet
 """
 
-def calculate_sentiment(tweet, sentiment_dict):
-    word_list = tweet.lower().split()
-    tweet_value = 0
+import vader_sentiment as vs
 
+def calculate_sentiment(tweet):
+    foo = vS.sentiment(tweet)
+    print(foo)
+    return foo
 
 
 def create_sentiment_dictionary(sentiment_file_location, splitter='\t'):

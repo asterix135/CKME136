@@ -2,11 +2,13 @@
 Routines to subset to english tweets that contain original image links
 """
 import json
+# import calculate_sentiment as cs
+from v_sentiment import vader_sentiment as vs
 
 
-#TWEET_FILE_PATH = '/Users/christophergraham/Documents/School/Ryerson_program/CKME136/Data/'
-TWEET_FILE_PATH = '/Users/chris/Documents/code/misc/CKME136/DATA/'
-TWEET_FILE = 'jan25_2.txt'
+TWEET_FILE_PATH = '/Users/christophergraham/Documents/School/Ryerson_program/CKME136/Data/'
+# TWEET_FILE_PATH = '/Users/chris/Documents/code/misc/CKME136/DATA/'
+TWEET_FILE = 'output_jan25_3.txt'
 
 
 def subset_tweets(tweet_file):
@@ -98,11 +100,17 @@ def exploratory():
     print('Nbr tweets with original images: ' + str(original_count) + '\n')
 
     # Look at some of the data for tweets that have original images
-    for tweet in tweet_list[:50]:
+    for tweet in tweet_list[:5]:
         if image_is_original(tweet):
             for key in tweet:
                 print(key + ': ' + str(tweet[key]))
             print()
+
+    # Test sentiment
+    for tweet in tweet_list[:50]:
+        tweet_text = tweet['text']
+        print(vs.sentiment(tweet_text))
+        print(tweet_text + '\n')
 
 if __name__ == '__main__':
     exploratory()
