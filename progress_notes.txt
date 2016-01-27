@@ -1,0 +1,9 @@
+SQL additions completed
+
+- output_jan24.txt (316 records)
+- output_jan25.txt (144 reords)
+- output_jan25_2.txt (233 records)
+- output_jan25_3.txt (704 records)
+- jan26_4.txt (15005 records)
+- jan26_all.txt (1546 records)
+- output_jan26_5.txt (761 records)

@@ -3,12 +3,12 @@ Routines to subset to english tweets that contain original image links
 """
 import json
 # import calculate_sentiment as cs
-from v_sentiment import vader_sentiment as vs
+import vader.vader as vs
 
 
 TWEET_FILE_PATH = '/Users/christophergraham/Documents/School/Ryerson_program/CKME136/Data/'
 # TWEET_FILE_PATH = '/Users/chris/Documents/code/misc/CKME136/DATA/'
-TWEET_FILE = 'output_jan25_3.txt'
+TWEET_FILE = 'output_jan24.txt'
 
 
 def subset_tweets(tweet_file):
@@ -74,6 +74,18 @@ def count_media_types(tweet_list, print_results=False):
     return all_media_types
 
 
+def convert_twitter_date_to_datetime(twitter_created_at):
+    """
+    Converts twitter 'created_at' data to UTC-5 datetime format
+    :param twitter_created_at:
+    :return:
+    """
+    from datetime import datetime
+    from email.utils import parsedate_tz, mktime_tz
+    timestamp = mktime_tz(parsedate_tz(twitter_created_at))
+    return str(datetime.fromtimestamp(timestamp))
+
+
 def exploratory():
     tweet_file = open(TWEET_FILE_PATH + TWEET_FILE)
     tweet_list = subset_tweets(tweet_file)
@@ -100,17 +112,21 @@ def exploratory():
     print('Nbr tweets with original images: ' + str(original_count) + '\n')
 
     # Look at some of the data for tweets that have original images
-    for tweet in tweet_list[:5]:
+    for tweet in tweet_list[:20]:
         if image_is_original(tweet):
             for key in tweet:
                 print(key + ': ' + str(tweet[key]))
             print()
+        timestamp = convert_twitter_date_to_datetime(tweet['created_at'])
+        print(timestamp)
+        print(type(timestamp))
+        print('\n\n')
 
     # Test sentiment
-    for tweet in tweet_list[:50]:
-        tweet_text = tweet['text']
-        print(vs.sentiment(tweet_text))
-        print(tweet_text + '\n')
+    # for tweet in tweet_list[:50]:
+    #     tweet_text = tweet['text']
+    #     print(vs.sentiment(tweet_text))
+    #     print(tweet_text + '\n')
 
 if __name__ == '__main__':
     exploratory()

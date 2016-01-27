@@ -5,7 +5,7 @@
 # Ignore articles
 Articles/
 
-# Choose data files to ignore
+# Data files to ignore
 output_jan25_3.txt
 output_jan25_2.txt
 output_jan25.txt
@@ -15,8 +15,9 @@ output_jan25.txt
 Research_notes/
 Class_Documents/
 
-#Twitter values
+# My specific values
 Python_code/twitter_vals.py
+Python_code/sql_vals.py
 
 
 ############################################
