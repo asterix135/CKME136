@@ -7,3 +7,16 @@ SQL additions completed
 - jan26_4.txt (15005 records)
 - jan26_all.txt (1546 records)
 - output_jan26_5.txt (761 records)
+
+# TODO: 1) Rewrite parse to just take all the files in the tweet directory
+# TODO: 1a) Figure out how to download responses to tweets
+# TODO: 2) Figure out how to deal with hashtags
+# TODO: 3) Build Neural Net structure
+# TODO: 4) Compare a couple different approaches to sentiment analysis
+# TODO: 5) Build image test set & figure out how to score
+        see download from:
+            http://www.crowdflower.com/data-for-everyone
+        see download from:
+            http://www.ee.columbia.edu/ln/dvmm/vso/download/sentibank.html#download
+
+

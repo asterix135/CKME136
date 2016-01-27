@@ -2,10 +2,10 @@
 Routines to calculate sentiment for a specific tweet
 """
 
-import vader_sentiment as vs
+import vader.vader as vs
 
-def calculate_sentiment(tweet):
-    foo = vS.sentiment(tweet)
+def calculate_sentiment(tweet_text):
+    foo = vs.sentiment(tweet)
     print(foo)
     return foo
 
