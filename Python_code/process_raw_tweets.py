@@ -4,12 +4,13 @@ Routines to subset to english tweets that contain original image links
 import json
 import pymysql.cursors
 import Python_code.sql_vals as sql_vals
+import os
+from datetime import datetime
+from email.utils import parsedate_tz, mktime_tz
 
-
-# TWEET_FILE_PATH = '/Users/christophergraham/Documents/School/Ryerson_program/CKME136/Data/'
+TWEET_FILE_PATH = '/Users/christophergraham/Documents/School/Ryerson_program/CKME136/Data/'
 # TWEET_FILE_PATH = '/Users/chris/Documents/code/misc/CKME136 copy/Data/'
-TWEET_FILE_PATH = '/Volumes/NeuralNet/Data/'
-TWEET_FILE = 'output_jan26_5.txt'
+# TWEET_FILE_PATH = '/Volumes/NeuralNet/Data/'
 
 
 def subset_tweets(tweet_file):
@@ -59,8 +60,6 @@ def convert_twitter_date_to_datetime(twitter_created_at):
     :param twitter_created_at:
     :return:
     """
-    from datetime import datetime
-    from email.utils import parsedate_tz, mktime_tz
     timestamp = mktime_tz(parsedate_tz(twitter_created_at))
     return str(datetime.fromtimestamp(timestamp))
 
@@ -79,10 +78,10 @@ def insert_record(connection, tweet):
         pass
 
 
-def send_to_database():
-    tweet_file = open(TWEET_FILE_PATH + TWEET_FILE)
+def send_to_database(tweet_file):
+    # tweet_file = open(TWEET_FILE_PATH + TWEET_FILE)
     tweet_list = subset_tweets(tweet_file)
-    tweet_file.close()
+    # tweet_file.close()
 
     # Open database connection
     connection = pymysql.connect(host=sql_vals.host,
@@ -104,5 +103,13 @@ def send_to_database():
     print(str(insert_count) + ' records inserted\n')
 
 
+def process_all_tweet_files(path):
+    for file in os.listdir(path):
+        if file.endswith('.txt'):
+            tweet_file = open(path + file)
+            send_to_database(tweet_file)
+            tweet_file.close()
+
+
 if __name__ == '__main__':
-    send_to_database()
+    process_all_tweet_files(TWEET_FILE_PATH)
