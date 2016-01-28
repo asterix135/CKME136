@@ -3,6 +3,7 @@ use TwitterImages;
 
 CREATE TABLE Original_tweets(
 	tweet_id BIGINT PRIMARY KEY,
+	username VARCHAR(255),
     text VARCHAR(255),
     image_url varchar(255),
     tweet_sentiment REAL,
@@ -12,6 +13,7 @@ CREATE TABLE Original_tweets(
 CREATE TABLE Reply_tweets(
 	reply_id BIGINT PRIMARY KEY,
     original_id BIGINT,
+    username VARCHAR(255),
     reply_text VARCHAR(255),
     reply_sentiment REAL,
     created_ts DATETIME,

@@ -3,11 +3,11 @@ Routines to subset to english tweets that contain original image links
 """
 import json
 # import calculate_sentiment as cs
-import vader.vader as vs
+# import vader.vader as vs
 
 
-TWEET_FILE_PATH = '/Users/christophergraham/Documents/School/Ryerson_program/CKME136/Data/'
-# TWEET_FILE_PATH = '/Users/chris/Documents/code/misc/CKME136/DATA/'
+# TWEET_FILE_PATH = '/Users/christophergraham/Documents/School/Ryerson_program/CKME136/Data/'
+TWEET_FILE_PATH = '/Users/chris/Documents/code/misc/CKME136/DATA/'
 TWEET_FILE = 'output_jan24.txt'
 
 

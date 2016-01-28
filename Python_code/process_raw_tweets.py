@@ -72,8 +72,9 @@ def insert_record(connection, tweet):
             tweet_txt = tweet['text']
             tweet_url = tweet['extended_entities']['media'][0]['media_url']
             timestamp = convert_twitter_date_to_datetime(tweet['created_at'])
-            sql = "INSERT INTO Original_tweets (tweet_id, text, image_url, created_ts) VALUES (%s, %s, %s, %s)"
-            cursor.execute(sql, (id, tweet_txt, tweet_url, timestamp))
+            username = tweet['user']['screen_name']
+            sql = "INSERT INTO Original_tweets (tweet_id, username, text, image_url, created_ts) VALUES (%s, %s, %s, %s, %s)"
+            cursor.execute(sql, (id, username, tweet_txt, tweet_url, timestamp))
     except:
         pass
 
