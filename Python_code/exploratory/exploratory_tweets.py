@@ -6,8 +6,8 @@ import json
 # import vader.vader as vs
 
 
-# TWEET_FILE_PATH = '/Users/christophergraham/Documents/School/Ryerson_program/CKME136/Data/'
-TWEET_FILE_PATH = '/Users/chris/Documents/code/misc/CKME136/DATA/'
+TWEET_FILE_PATH = '/Users/christophergraham/Documents/School/Ryerson_program/CKME136/Data/'
+# TWEET_FILE_PATH = '/Users/chris/Documents/code/misc/CKME136/DATA/'
 TWEET_FILE = 'output_jan24.txt'
 
 

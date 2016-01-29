@@ -8,11 +8,7 @@ Options:
 ?q=@(user who sent tweet)&since_id=(id of tweet)
 
 My solution:
-1) get mentions_timeline for the authenticated user (https://dev.twitter.com/docs/api/1.1/get/statuses/mentions_timeline)
-2) for every tweet in mentions_timeline: find if this tweet comes in reply to a tweet that was done through our system, using in_reply_to_status_id param, if so save this tweet and connect it to relevant tweet in our system.
-
-Tested this approach and it worked like a charm.
-
+\
 Second approach i didnt test yet, but i think it will work as well, is:
 1) get user_timeline (https://dev.twitter.com/docs/api/1.1/get/statuses/user_timeline)
 2) get user mentions_timeline and repeat as before, this time against user_timeline.
@@ -29,8 +25,8 @@ result_type=mixed&count=4
 
 """
 
-import oauthlib.oauth2 as oauth
-import urllib
+import oauth2 as oauth
+import urllib.request as urllib
 import twitter_vals as tv
 
 api_key = tv.api_key
@@ -40,12 +36,15 @@ access_token_secret = tv.access_token_secret
 
 _debug = 0
 
-# oauth_token = oauth.Token(key=access_token_key, secret=access_token_secret)
-oauth_token = oauth.OAuth2Token()
+oauth_token = oauth.Token(key=access_token_key, secret=access_token_secret)
 oauth_consumer = oauth.Consumer(key=api_key, secret=api_secret)
 
 signature_method_hmac_sha1 = oauth.SignatureMethod_HMAC_SHA1()
 
+http_method = "GET"
+
+http_handler = urllib.HTTPHandler(debuglevel=_debug)
+https_handler = urllib.HTTPSHandler(debuglevel=_debug)
 
 
 def twitterreq(url, method, parameters):
@@ -65,8 +64,7 @@ def twitterreq(url, method, parameters):
         encoded_post_data = None
         url = req.to_url()
 
-    opener = urllib.request.OpenerDirector()
-    # opener =urllib.OpenerDirector()
+    opener = urllib.OpenerDirector()
     opener.add_handler(http_handler)
     opener.add_handler(https_handler)
 
@@ -75,14 +73,26 @@ def twitterreq(url, method, parameters):
     return response
 
 
-def fetch_responses():
+def fetch_responses(username, tweet_id, count=20):
     # url = "https://stream.twitter.com/1/statuses/sample.json"
-    url = 'https://api.twitter.com/1.1/search/tweets.json'
-    # parameters = []
+    url = 'https://api.twitter.com/1.1/search/tweets.json?q=@' + username + \
+        '&since_id=' + str(tweet_id) + '&result_type=mixed&count=' + str(count)
+    parameters = []
     response = twitterreq(url, "GET", parameters)
     for line in response:
         print(line.strip())
 
+# https://api.twitter.com/1.1/search/tweets.json?q=%23freebandnames&
+# since_id=24012619984051000&max_id=250126199840518145&
+# result_type=mixed&count=4
 
-# if __name__ == '__main__':
-#     fetch_responses()
+
+def test():
+    # fetch_responses('voxdotcom', 692541672274694144)
+    fetch_responses('TO_WinterOps', 693052083361189888)
+
+if __name__ == '__main__':
+    # fetch_responses()
+    test()
+
+
