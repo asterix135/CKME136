@@ -7,6 +7,7 @@ CREATE TABLE Original_tweets(
     text VARCHAR(255),
     image_url varchar(255),
     tweet_sentiment REAL,
+    summary_sentiment REAL,
     created_ts DATETIME
 );
 
