@@ -38,17 +38,17 @@ def parse_tag(term, wordlist):
     # Remove hashtag, split by dash
     tags = term[1:].split('-')
     for tag in tags:
-        word = FindWord(tag, wordlist)
+        word = find_word(tag, wordlist)
         while word != None and len(tag) > 0:
             words += [word]
             if len(tag) == len(word):  # Special case for when eating rest of word
                 break
             tag = tag[len(word):]
-            word = FindWord(tag, wordlist)
+            word = find_word(tag, wordlist)
     return " ".join(words)
 
 
-def FindWord(token, wordlist):
+def find_word(token, wordlist):
     i = len(token) + 1
     while i > 1:
         i -= 1

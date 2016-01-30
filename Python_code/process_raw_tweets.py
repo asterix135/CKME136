@@ -103,6 +103,8 @@ def send_to_database(tweet_file):
     connection.commit()
     print(str(insert_count) + ' records inserted\n')
 
+    connection.close()
+
 
 def process_all_tweet_files(path):
     for file in os.listdir(path):

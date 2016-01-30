@@ -1,17 +1,13 @@
 
-# TODO: 1a) Figure out how to download responses to tweets
-    see:
+# TODO: 1) Implement time control for response download
         https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid
 
 # TODO: 2) Figure out what sentiment approach is best & how to parse vader
 # TODO: 3) Build Neural Net structure
 
+# TODO: 4) code in sentiment value to SQL save
+
 # TODO: 5) Build image test set & figure out how to score
         see download from:
             http://www.crowdflower.com/data-for-everyone
 
-
-# TODO: 6) try porting import programs to OAuthLib
-           try porting urllib2 to urllib
-        pip3 install oauthlib
-        (urllib installed)

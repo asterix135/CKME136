@@ -1,11 +1,14 @@
 """
 Run from command line
-python3 twitter_stream.py > output_file_name.txt
+Need to run as python2 because python3 outputs binary & is a pain to parse
+python2 twitter_stream.py > output_file_name.txt
 """
 
 import oauth2 as oauth
-# import urllib2 as urllib
-import urllib.request as urllib
+# to run as python2
+import urllib2 as urllib
+# to run as python3, need the following library
+# import urllib.request as urllib
 import twitter_vals as tv
 
 
