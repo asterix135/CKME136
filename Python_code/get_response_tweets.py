@@ -1,10 +1,10 @@
-import Python_code.twitter_vals as tv
+import twitter_vals as tv
 from TwitterSearch import *
 import time
 import pymysql.cursors
-import Python_code.sql_vals as sql_vals
+import sql_vals as sql_vals
 import urllib.request as urllib
-import Python_code.process_raw_tweets as prt
+import process_raw_tweets as prt
 
 api_key = tv.api_key
 api_secret = tv.api_secret
@@ -28,8 +28,14 @@ def mysql_connection():
 
 
 def write_response_to_mysql(tweet):
+    """
+    Query twitter for tweets mentioning original poster
+    if tweet is in repsonse to original tweet and is not a retweet,
+    Add to Reply_tweets table
+    :param tweet: dictionary
+    :return: nothing
+    """
     connection = mysql_connection()
-
     try:
         with connection.cursor() as cursor:
             id = tweet['id']
@@ -50,7 +56,6 @@ def pull_tweet_responses(username, tweet_id):
     if response and not RT, saves relevant details to SQL database
     :param username:
     :param tweet_id:
-    :return:
     """
     try:
         tso = TwitterSearchOrder()
@@ -64,22 +69,14 @@ def pull_tweet_responses(username, tweet_id):
                 access_token=access_token_key,
                 access_token_secret=access_token_secret
         )
-
         for tweet in ts.search_tweets_iterable(tso):
             if tweet['in_reply_to_status_id'] == tweet_id and \
                             tweet['text'][:2] != 'RT':
                 write_response_to_mysql(tweet)
 
     except TwitterSearchException as e:
-        print('\nTweet id: ' + str(tweet['id']))
+        print('\nTweet id: ' + str(tweet_id))
         print(e)
-
-
-def time_control(start_time):
-    # 10 second over buffer in case of some kind of lag
-    while time.time() - start_time < 90:
-        pass
-    return True
 
 
 def is_valid_image(url):
@@ -97,6 +94,11 @@ def is_valid_image(url):
 
 
 def delete_tweet(tweet_id):
+    """
+    Deletes one tweet from Original_tweets table in database
+    :param tweet_id: integer
+    :return: nothing
+    """
     connection = mysql_connection()
 
     with connection.cursor() as cursor:
@@ -118,54 +120,51 @@ def pull_all_original_tweets():
     connection = mysql_connection()
 
     # pull record id, username and image url from all downloaded tweets
-    original_tweets = []
-    tweets_to_delete = []
     with connection.cursor() as cursor:
         sql = "SELECT tweet_id, username, image_url FROM Original_tweets"
         cursor.execute(sql)
         original_tweets = cursor.fetchall()
-    #     next_tweet = cursor.fetchone()
-    #     while next_tweet is not None:
-    #         if is_valid_image(next_tweet['image_url']):
-    #             original_tweets.append(next_tweet)
-    #         else:
-    #             tweets_to_delete.append(next_tweet)
-    #         next_tweet = cursor.fetchone()
-    # # delete tweets with invalid urls from database
-    # for tweet in tweets_to_delete:
-    #     delete_tweet(connection, tweet['tweet_id'])
-    #
-    # connection.commit()
-
     connection.close()
     return original_tweets
 
 
 def get_response_tweets():
+    """
+    Iterates through all tweets in database 1/minute
+    If photo is no longer available, deletes tweet
+    Otherwise, looks for responses and adds those to the database
+    :return: nothing
+    """
     original_tweets = pull_all_original_tweets()
-    # 180 requests per 15 mins - this calculates how many iterations
-    add_loop = 0 if len(original_tweets) % 180 == 0 else 1
-    num_iterations = int(len(original_tweets)) + add_loop
-    for iteration in range(num_iterations):
-        start_time = time.time()
-        num_processed = 0
-        for tweet in original_tweets[iteration * 180:(iteration + 1) * 180]:
-            if is_valid_image(tweet['image_url']):
-                pull_tweet_responses(tweet['username'], tweet['tweet_id'])
-                num_processed += 1
-            else:
-                delete_tweet(tweet['id'])
-        print(num_processed)
-        print('time control for iteration' + str(iteration))
-        time_control(start_time)
+    # one request/minute
+    number_processed = 0
+    for tweet in original_tweets:
+        number_processed += 1
+        if number_processed % 10 == 0:
+            print("currently on tweet #" + str(number_processed) +
+                  '.  Tweet id: ' + str(tweet['tweet_id']))
+        if is_valid_image(tweet['image_url']):
+            pull_tweet_responses(tweet['username'], tweet['tweet_id'])
+            pulled = True
+        else:
+            delete_tweet(tweet['tweet_id'])
+            pulled = False
+        if pulled:
+            time.sleep(60)
+    # add_loop = 0 if len(original_tweets) % 180 == 0 else 1
+    # num_iterations = int(len(original_tweets)) + add_loop
+    # for iteration in range(num_iterations):
+    #     for tweet in original_tweets[iteration * 180:(iteration + 1) * 180]:
+    #         if is_valid_image(tweet['image_url']):
+    #             pull_tweet_responses(tweet['username'], tweet['tweet_id'])
+    #             pulled = True
+    #         else:
+    #             delete_tweet(tweet['tweet_id'])
+    #             pulled = False
+    #     if pulled:
+    #         time.sleep(60)
 
 
 if __name__ == '__main__':
-    # # pull_tweet_responses('TO_WinterOps', 693052083361189888)
-    # original_tweets = pull_valid_original_tweets()
-    # n = int(len(original_tweets)/180) + 1
-    # print(n)
-    # print(len(original_tweets))
-    # print(n * len(original_tweets))
     print('started at: ' + time.strftime('%H:%M:%S'))
     get_response_tweets()

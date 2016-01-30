@@ -3,14 +3,14 @@ Routines to subset to english tweets that contain original image links
 """
 import json
 import pymysql.cursors
-import Python_code.sql_vals as sql_vals
+import sql_vals as sql_vals
 import os
 from datetime import datetime
 from email.utils import parsedate_tz, mktime_tz
 
-TWEET_FILE_PATH = '/Users/christophergraham/Documents/School/Ryerson_program/CKME136/Data/'
+# TWEET_FILE_PATH = '/Users/christophergraham/Documents/School/Ryerson_program/CKME136/Data/'
 # TWEET_FILE_PATH = '/Users/chris/Documents/code/misc/CKME136 copy/Data/'
-# TWEET_FILE_PATH = '/Volumes/NeuralNet/Data/'
+TWEET_FILE_PATH = '/Volumes/NeuralNet/Data/'
 
 
 def subset_tweets(tweet_file):
