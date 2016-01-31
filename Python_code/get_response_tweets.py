@@ -38,9 +38,7 @@ def mysql_connection():
 
 def write_response_to_mysql(tweet):
     """
-    Query twitter for tweets mentioning original poster
-    if tweet is in repsonse to original tweet and is not a retweet,
-    Add to Reply_tweets table
+    Saves tweet data to SQL
     :param tweet: dictionary
     :return: nothing
     """
@@ -131,7 +129,7 @@ def pull_all_original_tweets():
     # pull record id, username and image url from all downloaded tweets
     with connection.cursor() as cursor:
         # sql = "SELECT tweet_id, username, image_url FROM Original_tweets"
-        sql = "SELECT tweet_id, username, image_url FROM Original_tweets WHERE tweet_id > 691364559852974080"
+        sql = "SELECT tweet_id, username, image_url FROM Original_tweets WHERE tweet_id > 691609729525616643"
         cursor.execute(sql)
         original_tweets = cursor.fetchall()
     connection.close()

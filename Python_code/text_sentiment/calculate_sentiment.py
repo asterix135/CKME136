@@ -2,8 +2,14 @@
 Routines to calculate sentiment for a specific tweet
 """
 
-import vader.vader as vs
-import split_hashtag as sh
+try:
+    from Python_code.text_sentiment.vader import vader as vs
+except:
+    import vader.vader as vs
+try:
+    from Python_code.text_sentiment import split_hashtag as sh
+except:
+    import split_hashtag as sh
 
 
 def vader_sentiment(tweet_text):
@@ -22,7 +28,6 @@ def generic_sentiment(tweet_text, sent_dict):
         if word.lower() in sent_dict:
             sentiment += sent_dict[word.lower()]
     return sentiment
-
 
 
 def create_sentiment_dictionary(sentiment_file_location, splitter='\t'):
