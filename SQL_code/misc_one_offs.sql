@@ -23,3 +23,5 @@ SELECT * FROM Original_tweets
 DELETE FROM Original_tweets WHERE tweet_id = 123;
 
 DELETE FROM Original_tweets WHERE tweet_id > 691363834263633921;
+
+SELECT COUNT(*) FROM Reply_tweets;

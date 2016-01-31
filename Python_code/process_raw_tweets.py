@@ -3,7 +3,10 @@ Routines to subset to english tweets that contain original image links
 """
 import json
 import pymysql.cursors
-import sql_vals as sql_vals
+try:
+    from Python_code import sql_vals as sql_vals
+except:
+    import sql_vals as sql_vals
 import os
 from datetime import datetime
 from email.utils import parsedate_tz, mktime_tz

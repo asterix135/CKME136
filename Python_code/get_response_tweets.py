@@ -1,10 +1,19 @@
-import twitter_vals as tv
+try:
+    from Python_code import twitter_vals as tv
+except:
+    import twitter_vals as tv
 from TwitterSearch import *
 import time
 import pymysql.cursors
-import sql_vals as sql_vals
+try:
+    from Python_code import sql_vals as sql_vals
+except:
+    import sql_vals as sql_vals
 import urllib.request as urllib
-import process_raw_tweets as prt
+try:
+    from Python_code import process_raw_tweets as prt
+except:
+    import process_raw_tweets as prt
 
 api_key = tv.api_key
 api_secret = tv.api_secret
@@ -121,7 +130,8 @@ def pull_all_original_tweets():
 
     # pull record id, username and image url from all downloaded tweets
     with connection.cursor() as cursor:
-        sql = "SELECT tweet_id, username, image_url FROM Original_tweets"
+        # sql = "SELECT tweet_id, username, image_url FROM Original_tweets"
+        sql = "SELECT tweet_id, username, image_url FROM Original_tweets WHERE tweet_id > 691364559852974080"
         cursor.execute(sql)
         original_tweets = cursor.fetchall()
     connection.close()
@@ -151,18 +161,7 @@ def get_response_tweets():
             pulled = False
         if pulled:
             time.sleep(60)
-    # add_loop = 0 if len(original_tweets) % 180 == 0 else 1
-    # num_iterations = int(len(original_tweets)) + add_loop
-    # for iteration in range(num_iterations):
-    #     for tweet in original_tweets[iteration * 180:(iteration + 1) * 180]:
-    #         if is_valid_image(tweet['image_url']):
-    #             pull_tweet_responses(tweet['username'], tweet['tweet_id'])
-    #             pulled = True
-    #         else:
-    #             delete_tweet(tweet['tweet_id'])
-    #             pulled = False
-    #     if pulled:
-    #         time.sleep(60)
+
 
 
 if __name__ == '__main__':
