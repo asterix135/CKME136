@@ -1,8 +1,18 @@
 
-# TODO: 1) Implement time control for response download
-        https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid
 
 # TODO: 2) Figure out what sentiment approach is best & how to parse vader
+    Lexicon/ approach options:
+        Vader
+        AFINN
+        Hu & Liu lexicon
+        ANEW lexicon - rates strength/intensity
+        SentiWordNet - rates strngth/intensity - can use Python's NLTK
+            (Natural Language ToolKit www.nltk.org)
+        SenticNet - Python tool
+            (senticnet 0.3.2 (https://pypi.python.org/pypi/senticnet))
+
+
+
 # TODO: 3) Build Neural Net structure
 
 # TODO: 4) code in sentiment value to SQL save

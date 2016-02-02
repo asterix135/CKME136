@@ -85,7 +85,6 @@ def is_valid_response(json_line, tweet_id):
         else:
             return False
     except:
-        print('decode failed')
         return False
 
 
@@ -103,11 +102,12 @@ def is_valid_image(url):
     return valid_url
 
 
-def run_query(tweet_id, username):
+def run_query(tweet_id, username, response_list):
     """
     Runs basic Twitter API Query
     Should be rate limited to 180/15 min
     :param tweet_id: integer
+    :param response_list: list of response tweets found
     :param username: string
     """
     # url = "https://stream.twitter.com/1/statuses/sample.json"
@@ -119,6 +119,7 @@ def run_query(tweet_id, username):
     for line in response:
         if is_valid_response(line, tweet_id):
             print(line.strip())
+            response_list.append(line.strip())
 
 
 def get_sql_records():
@@ -129,8 +130,8 @@ def get_sql_records():
     """
     cur_dir = os.getcwd()
     os.chdir('..')
-    sql_file = open('Data/test_stream.txt')
-    # sql_file = open('Data/sql_dump.txt')
+    # sql_file = open('Data/test_stream.txt')
+    sql_file = open('Data/sql_dump.txt')
     os.chdir(cur_dir)
     sql_data = []
 
@@ -144,10 +145,10 @@ def get_sql_records():
     return sql_data
 
 
-def write_bad_image_file(bad_image_list):
+def write_bad_image_file(bad_image_list, idx_num):
     cur_dir = os.getcwd()
     os.chdir('..')
-    file_name = 'Data/bad_images' + str(idx_num) + '.txt'
+    file_name = 'Data/response_data/bad_images' + str(idx_num) + '.txt'
     bad_images = open(file_name, 'w')
     os.chdir(cur_dir)
     for tweet in bad_image_list:
@@ -155,24 +156,52 @@ def write_bad_image_file(bad_image_list):
     bad_images.close()
 
 
+def write_responses(response_list, idx_num):
+    cur_dir = os.getcwd()
+    os.chdir('..')
+    file_name = 'Data/response_data/responses' + str(idx_num) + '.txt'
+    responses = open(file_name, 'w')
+    os.chdir(cur_dir)
+    for tweet in response_list:
+        responses.write(str(tweet['id']) + '\t' + tweet['text'] + '\t' +
+                        tweet['in_reply_to_status_id'] + '\t' +
+                        tweet['created_at'] +'\n')
+    responses.close()
+
+
 def fetch_responses():
     sql_data = get_sql_records()
-    num_recs = len(sql_data)
+    response_list = []
     no_image = []
     start_time = time.time()
     processed = 0
-    write_file = 0
-    for tweet in sql_data[:1]:
+    write_file_num = 0
+    for tweet in sql_data:
         if is_valid_image(tweet['image_url']):
-            run_query(tweet['tweet_id'], tweet['username'])
+            run_query(tweet['tweet_id'], tweet['username'], response_list)
             processed += 1
         else:
             no_image.append(tweet)
+        if len(response_list) > 100:
+            write_responses(response_list, write_file_num)
+            response_list = []
+            write_file_num += 1
+        if len(no_image) > 100:
+            write_bad_image_file(no_image, write_file_num)
+            no_image = []
+            write_file_num += 1
+        if processed % 50 == 0:
+            print(str(processed) + ' records processed. Up to ' +
+                  str(tweet['tweet_id']))
+            print('at: ' + time.strftime('%H:%M:%S'))
+            print(str(len(no_image)) + ' bad image links found')
+            print(str(len(response_list)) + ' responses found\n')
 
-        if time.time() - start_time < 2:
-            time.sleep(time.time() - start_time)
+        if time.time() - start_time < 5:
+            time.sleep(5 - (time.time() - start_time))
         start_time = time.time()
 
 
 if __name__ == '__main__':
+    print('started at: ' + time.strftime('%H:%M:%S'))
     fetch_responses()

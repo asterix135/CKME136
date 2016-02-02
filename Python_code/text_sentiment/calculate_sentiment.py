@@ -48,21 +48,21 @@ def create_sentiment_dictionary(sentiment_file_location, splitter='\t'):
 
 
 def test():
-    sample_test = ["when meghan doesnt know how to use her computer https://t.co/Qi34ysqGLa",
-                   "#KendrickJohnson values, she's related to Eric Sheppard since she's threatening mutilation? Eric wants to decapitate https://t.co/JtYURg7fXP",
+    sample_test = ["#KendrickJohnson values, she's related to Eric Sheppard since she's threatening mutilation? Eric wants to decapitate https://t.co/JtYURg7fXP",
                    "When he's handsome and a scholar lol https://t.co/hUmMInfzt6",
                    "I love streets with no rush, specially in night. https://t.co/GzDFAybttK",
                    "#makeAmericaGreatLikeGermany On to victory! #DonaldTrump2016: https://t.co/c3uLw9rrUZ https://t.co/0b1HCh8jC0",
                    "Way to go D!  Keep it up! https://t.co/chDv9Emq4v",
-                   'BING AND GRONDAHL B &amp; G "WHO IS CALLING" PORCELAIN FIGURE FIGURINE #2251  https://t.co/QUCt8erIT3 https://t.co/Qm5coKVUk8',
-                   'Look at this idiot https://t.co/yCrRlpE12X']
+                   'Look at this idiot https://t.co/yCrRlpE12X',
+                   'Japanese economic policy just got weird. And America might be next. ',
+                   "Children reportedly burn to death after Boko Haram suicide bombers attack Nigerian village",
+                   'Black children are at twice the risk of lead exposure as white children',
+                   'Turns out salamanders are really cute — and important to our ecosystems.']
     word_list = sh.english_word_list()
-    afinn_dict = create_sentiment_dictionary('text_sentiment/AFINN-111.txt')
+    afinn_dict = create_sentiment_dictionary('AFINN-111.txt')
     for text in sample_test:
         cleaned_text = sh.parse_sentence(text, word_list)
         print(text)
-        print(vader_sentiment(text))
-        print(generic_sentiment(text, afinn_dict))
         print(cleaned_text)
         print(vader_sentiment(cleaned_text))
         print(generic_sentiment(cleaned_text, afinn_dict))

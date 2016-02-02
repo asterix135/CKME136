@@ -36,7 +36,7 @@ def pull_all_original_tweets():
     # pull record id, username and image url from all downloaded tweets
     with connection.cursor() as cursor:
         # sql = "SELECT tweet_id, username, image_url FROM Original_tweets"
-        sql = "SELECT tweet_id, username, image_url FROM Original_tweets"
+        sql = "SELECT * FROM Original_tweets LIMIT 50"
         cursor.execute(sql)
         original_tweets = cursor.fetchall()
     connection.close()
@@ -44,11 +44,12 @@ def pull_all_original_tweets():
     cur_dir = os.getcwd()
     os.chdir('..')
     os.chdir('..')
-    dump_file = open('Data/sql_dump.txt', 'w')
+    dump_file = open('Data/sample_records.txt', 'w')
     os.chdir(cur_dir)
     for tweet in original_tweets:
         dump_file.write(str(tweet['tweet_id']) + '\t' + tweet['username'] +
-                        '\t' + tweet['image_url'] + '\n')
+                        '\t' + tweet['text'].replace('\n', '') + '\t' +
+                        tweet['image_url'] + '\n')
     dump_file.close()
     os.chdir(cur_dir)
 
