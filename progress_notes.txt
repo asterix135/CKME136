@@ -5,7 +5,6 @@
         Vader
         AFINN
         Hu & Liu lexicon
-        ANEW lexicon - rates strength/intensity
         SentiWordNet - rates strngth/intensity - can use Python's NLTK
             (Natural Language ToolKit www.nltk.org)
         SenticNet - Python tool
@@ -21,5 +20,5 @@
         see download from:
             http://www.crowdflower.com/data-for-everyone
 
-Check why not getting responses for tweet id 691363888797888513
+
 

@@ -24,4 +24,11 @@ DELETE FROM Original_tweets WHERE tweet_id = 123;
 
 DELETE FROM Original_tweets WHERE tweet_id > 691363834263633921;
 
-SELECT COUNT(*) FROM Reply_tweets;
+ALTER TABLE Original_tweets
+	ADD COLUMN unclear_sentiment TINYINT AFTER tweet_sentiment,
+    CHANGE COLUMN tweet_sentiment tweet_sentiment TINYINT,
+    DROP COLUMN summary_sentiment
+;
+
+DROP TABLE Reply_tweets;
+    

@@ -15,8 +15,10 @@ do with disagreement
 
 import pymysql.cursors
 import numpy as np
+import pandas as pd
 from Python_code import sql_vals
 from Python_code.text_sentiment.vader import vader
+from Python_code.text_sentiment import split_hashtag
 
 
 
@@ -50,6 +52,39 @@ def pull_all_original_tweets():
         original_tweets = cursor.fetchall()
     connection.close()
     return original_tweets
+
+
+def calculate_vader(tweet_list):
+    """
+    Calculate sentimenet using VADER code
+    :param tweet_list:
+    :return:
+    """
+    pass
+
+
+def calculate_afinn(tweet_list):
+    """
+    calculate sentiment using AFINN lexicon
+    :param tweet_list:
+    :return:
+    """
+    pass
+
+
+def calculate_hu_lui(tweet_list):
+    pass
+
+
+def calculate_sentic(tweet_list):
+    pass
+
+
+def figure_tweet_stats(result_matrix):
+    pass
+
+
+def update_database
 
 
 def calculate_sentiments(tweet_list):
