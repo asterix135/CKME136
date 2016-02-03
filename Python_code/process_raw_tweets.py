@@ -3,16 +3,12 @@ Routines to subset to english tweets that contain original image links
 """
 import json
 import pymysql.cursors
-try:
-    from Python_code import sql_vals as sql_vals
-except:
-    import sql_vals as sql_vals
+from Python_code import sql_vals as sql_vals
 import os
 from datetime import datetime
 from email.utils import parsedate_tz, mktime_tz
+from Python_code.text_sentiment import split_hashtag as sh
 
-# TWEET_FILE_PATH = '/Users/christophergraham/Documents/School/Ryerson_program/CKME136/Data/'
-# TWEET_FILE_PATH = '/Users/chris/Documents/code/misc/CKME136 copy/Data/'
 TWEET_FILE_PATH = '/Volumes/NeuralNet/Data/'
 
 
@@ -67,25 +63,28 @@ def convert_twitter_date_to_datetime(twitter_created_at):
     return str(datetime.fromtimestamp(timestamp))
 
 
-def insert_record(connection, tweet):
+def insert_record(connection, tweet, word_list):
     try:
         with connection.cursor() as cursor:
             # Create new record
             id = tweet['id']
             tweet_txt = tweet['text']
+            cleaned_text = sh.parse_sentence(tweet_txt, word_list)
             tweet_url = tweet['extended_entities']['media'][0]['media_url']
             timestamp = convert_twitter_date_to_datetime(tweet['created_at'])
             username = tweet['user']['screen_name']
-            sql = "INSERT INTO Original_tweets (tweet_id, username, text, image_url, created_ts) VALUES (%s, %s, %s, %s, %s)"
-            cursor.execute(sql, (id, username, tweet_txt, tweet_url, timestamp))
+            sql = "INSERT INTO Original_tweets (tweet_id, username, text, " \
+                  "processed_text, image_url, created_ts) " \
+                  "VALUES (%s, %s, %s, %s, %s, %s)"
+            cursor.execute(sql, (id, username, tweet_txt, cleaned_text,
+                                 tweet_url, timestamp))
     except:
         pass
 
 
 def send_to_database(tweet_file):
-    # tweet_file = open(TWEET_FILE_PATH + TWEET_FILE)
+    english_words = sh.english_word_list()
     tweet_list = subset_tweets(tweet_file)
-    # tweet_file.close()
 
     # Open database connection
     connection = pymysql.connect(host=sql_vals.host,
@@ -96,12 +95,11 @@ def send_to_database(tweet_file):
                                  cursorclass=pymysql.cursors.DictCursor,
                                  charset='utf8mb4')
 
-
     # save relevant data on tweets with original images
     insert_count = 0
     for tweet in tweet_list:
         if image_is_original(tweet):
-            insert_record(connection, tweet)
+            insert_record(connection, tweet, english_words)
             insert_count += 1
     connection.commit()
     print(str(insert_count) + ' records inserted\n')

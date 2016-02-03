@@ -2,6 +2,7 @@
 Takes a tweet and does 2 things:
 1) removes hyperlinks
 2) attempts to parse hashtags into actual words
+3) writes new value to database
 Code derived from
 stackoverflow.com/questions/20516100/term-split-by-hashtag-of-multiple-words
 """

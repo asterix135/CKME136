@@ -18,7 +18,7 @@ import numpy as np
 import pandas as pd
 from Python_code import sql_vals
 from Python_code.text_sentiment.vader import vader
-from Python_code.text_sentiment import split_hashtag
+from Python_code.text_sentiment import split_hashtag as sh
 
 
 
@@ -51,7 +51,8 @@ def pull_all_original_tweets():
         cursor.execute(sql)
         original_tweets = cursor.fetchall()
     connection.close()
-    return original_tweets
+    all_tweets = pd.DataFrame(original_tweets)
+    return all_tweets
 
 
 def calculate_vader(tweet_list):
@@ -84,7 +85,15 @@ def figure_tweet_stats(result_matrix):
     pass
 
 
-def update_database
+def update_database(result_matrix):
+    """
+    Updates database to indicate tweet sentiment and whether certainty
+    tweet_sentiment: -1 = negative, 0 = neutral, 1 = positive
+    unclear_sentiment: 0 = clear, 1 = unclear
+    :param result_matrix:
+    :return:
+    """
+    pass
 
 
 def calculate_sentiments(tweet_list):
@@ -93,3 +102,10 @@ def calculate_sentiments(tweet_list):
     :param tweet_list:
     :return:
     """
+    pass
+
+
+if __name__ == '__main__':
+    # foo = pull_all_original_tweets()
+    # print(type(foo.at[0,'text']))
+    pre_process()

@@ -1,4 +1,3 @@
-drop database TwitterImages;
 
 select count(*) from original_tweets;
 
@@ -31,4 +30,7 @@ ALTER TABLE Original_tweets
 ;
 
 DROP TABLE Reply_tweets;
+
+ALTER TABLE Original_tweets
+	ADD COLUMN processed_text VARCHAR(255) AFTER text;
     
