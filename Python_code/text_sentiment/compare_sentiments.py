@@ -40,14 +40,15 @@ def mysql_connection():
 def pull_all_original_tweets():
     """
     Hardcoded SQL query to pull all originally selected tweets
-    :return original_tweets: list of dictionaries
+    :return original_tweets: pandas dataframe of original tweets
     """
     # open database connection
     connection = mysql_connection()
 
     # pull record id, username and image url from all downloaded tweets
     with connection.cursor() as cursor:
-        sql = "SELECT tweet_id, username, text FROM Original_tweets"
+        sql = "SELECT tweet_id, username, text, processed_tweet " \
+              "FROM Original_tweets"
         cursor.execute(sql)
         original_tweets = cursor.fetchall()
     connection.close()
@@ -64,10 +65,10 @@ def calculate_vader(tweet_list):
     pass
 
 
-def calculate_afinn(tweet_list):
+def calculate_afinn(tweet):
     """
     calculate sentiment using AFINN lexicon
-    :param tweet_list:
+    :param tweet:
     :return:
     """
     pass
@@ -96,16 +97,20 @@ def update_database(result_matrix):
     pass
 
 
-def calculate_sentiments(tweet_list):
+def calculate_sentiments():
     """
     Loops through various
     :param tweet_list:
     :return:
     """
-    pass
+    # 1. get tweet data into a dataframe
+    tweet_df = pull_all_original_tweets()
+    # 2. Calculate vader sentiment
+    # tweet_df['vader'] = tweet_df.appy(lambda x: calculate_vader)
+    tweet_df['vader'] = tweet_df['text'].apply(calculate_vader)
 
 
 if __name__ == '__main__':
     # foo = pull_all_original_tweets()
     # print(type(foo.at[0,'text']))
-    pre_process()
+    calculate_sentiments()
