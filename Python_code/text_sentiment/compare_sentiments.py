@@ -2,7 +2,7 @@
 Compare various methods to ascribe sentiment to tweets
 With aim to figuring out how much they disagree and figuring out what to
 do with disagreement
-1) read in all tweets (currently list of dictionaries - dunno if best)
+1) read in all tweets
 2) Double loop:
     Sentiment methods
         Tweets
@@ -47,7 +47,7 @@ def pull_all_original_tweets():
 
     # pull record id, username and image url from all downloaded tweets
     with connection.cursor() as cursor:
-        sql = "SELECT tweet_id, username, text, processed_tweet " \
+        sql = "SELECT tweet_id, username, text, processed_text " \
               "FROM Original_tweets"
         cursor.execute(sql)
         original_tweets = cursor.fetchall()
@@ -56,22 +56,78 @@ def pull_all_original_tweets():
     return all_tweets
 
 
-def calculate_vader(tweet_list):
+def return_sentiment_category(score, threshhold):
+    """
+    Used to determine
+    :param score: numeric: value calculated from specific method
+    :param threshhold: cutoff value below which sentiment = 0
+    :return integer:  -1 (negative), 0 (neutral), 1 (positive)
+    """
+    if score <= -threshhold:
+        return -1
+    elif score >= threshhold:
+        return 1
+    else:
+        return 0
+
+
+def calculate_vader(tweet):
     """
     Calculate sentimenet using VADER code
-    :param tweet_list:
-    :return:
+    :param tweet: tokenizable string
+    :return integer: -1 (negative), 0 (neutral), 1 (positive)
     """
-    pass
+    sentiment = vader.sentiment(tweet)['compound']
+    return return_sentiment_category(sentiment, 0.1)
 
 
-def calculate_afinn(tweet):
+def load_afinn_dictionary(sentiment_file_location, splitter = '\t'):
+    """
+    Creates a sentiment dictionary based on a text file
+    dictionary needs to be lines of term and sentiment score
+    :param sentiment_file_location: string with location of sentiment data
+    :param splitter: text of character to split on = default is tab
+    :return sentiment_dictionary: dictionary
+    """
+    sentiment_file = open(sentiment_file_location)
+    sentiment_dictionary = {}
+    for line in sentiment_file:
+        term, score = line.split(splitter)
+        sentiment_dictionary[term] = float(score)
+    sentiment_file.close()
+    return sentiment_dictionary
+
+
+def calculate_simple_sentiment(tweet, sentiment_dict):
     """
     calculate sentiment using AFINN lexicon
-    :param tweet:
+    :param tweet: string
+    :param sentiment_dict: Dictionary with +/- sentiment scores
     :return:
     """
-    pass
+    tokens = tweet.split()
+    sentiment = 0
+    for word in tokens:
+        if word in sentiment_dict:
+            sentiment += sentiment_dict[word]
+    return return_sentiment_category(sentiment, 1)
+
+
+def load_huliu_dict(file_location):
+    sentiment_dictionary = {}
+    negative_words = open(file_location + 'negative-words.txt')
+    for line in negative_words:
+        if line[0] != ';' and len(line) > 0:
+            sentiment_dictionary[line.strip()] = -1
+    negative_words.close()
+
+    positive_words = open(file_location + 'positive-words.txt')
+    for line in positive_words:
+        if line[0] != ';' and len(line) > 0:
+            sentiment_dictionary[line.strip()] = 1
+    positive_words.close()
+
+    return sentiment_dictionary
 
 
 def calculate_hu_lui(tweet_list):
@@ -106,11 +162,57 @@ def calculate_sentiments():
     # 1. get tweet data into a dataframe
     tweet_df = pull_all_original_tweets()
     # 2. Calculate vader sentiment
-    # tweet_df['vader'] = tweet_df.appy(lambda x: calculate_vader)
-    tweet_df['vader'] = tweet_df['text'].apply(calculate_vader)
+    tweet_df['vader_orig'] = tweet_df['text'].apply(calculate_vader)
+    tweet_df['vader_proc'] = tweet_df['processed_text'].apply(calculate_vader)
+    # 3. Calculate AFINN sentiment (simple word value count)
+    afinn_dict = load_afinn_dictionary('AFINN-111.txt')
+    tweet_df['afinn_orig'] = \
+        tweet_df['text'].apply(lambda x: calculate_simple_sentiment(x,
+                                                                    afinn_dict))
+    tweet_df['afinn_proc'] = \
+        tweet_df['processed_text'].apply(lambda x:
+                                         calculate_simple_sentiment(x,
+                                                                    afinn_dict))
+    # 4. Calculate using Hu/Liu simple +/- word count
+    hu_liu_dict = load_huliu_dict('hu_liu/opinion-lexicon-English/')
+    tweet_df['huliu_orig'] = \
+        tweet_df['text'].apply(lambda x:
+                               calculate_simple_sentiment(x, hu_liu_dict))
+    tweet_df['huliu_proc'] = \
+        tweet_df['processed_text'].apply(
+                lambda x: calculate_simple_sentiment(x, hu_liu_dict))
+
+    # Interim: print results
+    print('Positive - original text')
+    print(sum(tweet_df['vader_orig'] == 1))
+    print(sum(tweet_df['afinn_orig'] == 1))
+    print(sum(tweet_df['huliu_orig'] == 1))
+
+    print('\nPositive - processed text')
+    print(sum(tweet_df['vader_proc'] == 1))
+    print(sum(tweet_df['afinn_proc'] == 1))
+    print(sum(tweet_df['huliu_proc'] == 1))
+
+    print('\nNegative - original text')
+    print(sum(tweet_df['vader_orig'] == -1))
+    print(sum(tweet_df['afinn_orig'] == -1))
+    print(sum(tweet_df['huliu_orig'] == -1))
+
+    print('\nNegative - processed text')
+    print(sum(tweet_df['vader_proc'] == -1))
+    print(sum(tweet_df['afinn_proc'] == -1))
+    print(sum(tweet_df['huliu_proc'] == -1))
+
+    print('\nNeutral - original text')
+    print(sum(tweet_df['vader_orig'] == 0))
+    print(sum(tweet_df['afinn_orig'] == 0))
+    print(sum(tweet_df['huliu_orig'] == 0))
+
+    print('\nNeutral - processed text')
+    print(sum(tweet_df['vader_proc'] == 0))
+    print(sum(tweet_df['afinn_proc'] == 0))
+    print(sum(tweet_df['huliu_proc'] == 0))
 
 
 if __name__ == '__main__':
-    # foo = pull_all_original_tweets()
-    # print(type(foo.at[0,'text']))
     calculate_sentiments()
