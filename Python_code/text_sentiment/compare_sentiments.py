@@ -10,16 +10,14 @@ do with disagreement
 3) For each tweet calculate degree agreement
 4) Calculate which method has highest correlation with other methods
 5) Dump ambiguous tweets
-6) Assign sentiment value based on???
+6) Assign sentiment value based on unanimous agreement
 """
 
 import pymysql.cursors
-import numpy as np
 import pandas as pd
+import numpy as np
 from Python_code import sql_vals
 from Python_code.text_sentiment.vader import vader
-from Python_code.text_sentiment import split_hashtag as sh
-
 
 
 def mysql_connection():
@@ -130,14 +128,6 @@ def load_huliu_dict(file_location):
     return sentiment_dictionary
 
 
-def calculate_hu_lui(tweet_list):
-    pass
-
-
-def calculate_sentic(tweet_list):
-    pass
-
-
 def figure_tweet_stats(result_matrix):
     pass
 
@@ -150,7 +140,13 @@ def update_database(result_matrix):
     :param result_matrix:
     :return:
     """
-    pass
+    # TODO: Complete this function
+    connection = mysql_connection()
+    with connection.cursor() as cursor:
+        sql = 'UPDATE Original_tweets SET tweet_sentiment = "%s", ' \
+              'unclear_sentiment = "%s" WHERE tweet_id = %s'
+        clarity = 0
+    connection.close()
 
 
 def calculate_sentiments():
@@ -162,56 +158,29 @@ def calculate_sentiments():
     # 1. get tweet data into a dataframe
     tweet_df = pull_all_original_tweets()
     # 2. Calculate vader sentiment
-    tweet_df['vader_orig'] = tweet_df['text'].apply(calculate_vader)
-    tweet_df['vader_proc'] = tweet_df['processed_text'].apply(calculate_vader)
+    tweet_df['vader'] = tweet_df['processed_text'].apply(calculate_vader)
     # 3. Calculate AFINN sentiment (simple word value count)
     afinn_dict = load_afinn_dictionary('AFINN-111.txt')
-    tweet_df['afinn_orig'] = \
-        tweet_df['text'].apply(lambda x: calculate_simple_sentiment(x,
-                                                                    afinn_dict))
-    tweet_df['afinn_proc'] = \
+    tweet_df['afinn'] = \
         tweet_df['processed_text'].apply(lambda x:
                                          calculate_simple_sentiment(x,
                                                                     afinn_dict))
     # 4. Calculate using Hu/Liu simple +/- word count
     hu_liu_dict = load_huliu_dict('hu_liu/opinion-lexicon-English/')
-    tweet_df['huliu_orig'] = \
-        tweet_df['text'].apply(lambda x:
-                               calculate_simple_sentiment(x, hu_liu_dict))
-    tweet_df['huliu_proc'] = \
+    tweet_df['huliu'] = \
         tweet_df['processed_text'].apply(
                 lambda x: calculate_simple_sentiment(x, hu_liu_dict))
 
-    # Interim: print results
-    print('Positive - original text')
-    print(sum(tweet_df['vader_orig'] == 1))
-    print(sum(tweet_df['afinn_orig'] == 1))
-    print(sum(tweet_df['huliu_orig'] == 1))
-
-    print('\nPositive - processed text')
-    print(sum(tweet_df['vader_proc'] == 1))
-    print(sum(tweet_df['afinn_proc'] == 1))
-    print(sum(tweet_df['huliu_proc'] == 1))
-
-    print('\nNegative - original text')
-    print(sum(tweet_df['vader_orig'] == -1))
-    print(sum(tweet_df['afinn_orig'] == -1))
-    print(sum(tweet_df['huliu_orig'] == -1))
-
-    print('\nNegative - processed text')
-    print(sum(tweet_df['vader_proc'] == -1))
-    print(sum(tweet_df['afinn_proc'] == -1))
-    print(sum(tweet_df['huliu_proc'] == -1))
-
-    print('\nNeutral - original text')
-    print(sum(tweet_df['vader_orig'] == 0))
-    print(sum(tweet_df['afinn_orig'] == 0))
-    print(sum(tweet_df['huliu_orig'] == 0))
-
-    print('\nNeutral - processed text')
-    print(sum(tweet_df['vader_proc'] == 0))
-    print(sum(tweet_df['afinn_proc'] == 0))
-    print(sum(tweet_df['huliu_proc'] == 0))
+    # 5. identify values with consistent sentiment ratings
+    tweet_df['consistent'] = tweet_df.apply(lambda x:
+                                            x['vader'] ==
+                                            x['afinn'] ==
+                                            x['huliu'], axis=1)
+    tweet_df['sentiment'] = np.where(tweet_df['consistent'] == True,
+                                     tweet_df['vader'], None)
+    print('Positive sentiment: ' + str(sum(tweet_df['sentiment'] == 1)))
+    print('Negative sentiment: ' + str(sum(tweet_df['sentiment'] == -1)))
+    print('Neutral sentiment: ' + str(sum(tweet_df['sentiment'] == 0)))
 
 
 if __name__ == '__main__':
