@@ -129,10 +129,14 @@ def load_huliu_dict(file_location):
 
 
 def figure_tweet_stats(result_matrix):
-    pass
+    corr_df = result_matrix.corr()
+    print(corr_df)
+    corr_df.to_csv('text_sentiment_correlation.txt', sep=' ', index=True,
+                   header=True, float_format='%.3f')
+    return corr_df
 
 
-def update_database(result_matrix):
+def update_database(sentiment_df):
     """
     Updates database to indicate tweet sentiment and whether certainty
     tweet_sentiment: -1 = negative, 0 = neutral, 1 = positive
@@ -142,10 +146,15 @@ def update_database(result_matrix):
     """
     # TODO: Complete this function
     connection = mysql_connection()
-    with connection.cursor() as cursor:
-        sql = 'UPDATE Original_tweets SET tweet_sentiment = "%s", ' \
-              'unclear_sentiment = "%s" WHERE tweet_id = %s'
-        clarity = 0
+    for i in range(len(sentiment_df.index)):
+        with connection.cursor() as cursor:
+            tweet = sentiment_df.ix[i,:]
+            sql = 'UPDATE Original_tweets SET tweet_sentiment = "%s", ' \
+                  'unclear_sentiment = "%s" WHERE tweet_id = %s'
+            clarity = int(not tweet['consistent'])
+            sentiment = tweet['sentiment']
+            cursor.execute(sql, sentiment, clarity)
+    connection.commit()
     connection.close()
 
 
@@ -181,6 +190,8 @@ def calculate_sentiments():
     print('Positive sentiment: ' + str(sum(tweet_df['sentiment'] == 1)))
     print('Negative sentiment: ' + str(sum(tweet_df['sentiment'] == -1)))
     print('Neutral sentiment: ' + str(sum(tweet_df['sentiment'] == 0)))
+    print('\nCorrelation stats:')
+    figure_tweet_stats(tweet_df[['vader', 'afinn', 'huliu']])
 
 
 if __name__ == '__main__':
