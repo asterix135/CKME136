@@ -1,0 +1,11 @@
+mean values
+width        499.690224
+height       465.050059
+pixels    251268.602473
+dtype: float64
+
+standard deviations:
+width        151.365537
+height       239.421889
+pixels    155099.618242
+dtype: float64

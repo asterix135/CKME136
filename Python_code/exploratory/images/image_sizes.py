@@ -10,10 +10,9 @@ from io import BytesIO
 import requests
 from Python_code import sql_connect as mysql
 import pandas as pd
-import matplotlib.pyplot as plt
 
 
-TESTING = True
+TESTING = False
 
 
 def get_size(tweet):
@@ -61,46 +60,39 @@ def remove_bad_image(tweet_id):
 def calculate_image_stats():
     tweet_list = load_tweet_list()
     image_stats = pd.DataFrame(columns=('width', 'height', 'pixels'))
-    tweet_idx = 0
     old_mean = 10e10
     converge_threshhold = 0.001
     converged = False
     start_idx = 0
+    times_converged = 0
     while not converged:
-        for i in range(start_idx + 50):
-            image_size = get_size(tweet_list[tweet_idx])
+        for i in range(start_idx, start_idx + 50):
+            image_size = get_size(tweet_list[i])
             if image_size:
                 image_stats = image_stats.append(image_size, ignore_index=True)
         new_mean = image_stats.mean()['pixels']
         if abs(new_mean - old_mean)/old_mean < converge_threshhold:
-            converged = True
-        else:
-            start_idx += 50
-            if start_idx + 50 < len(image_stats):
+            times_converged += 1
+            if times_converged > 2:
                 converged = True
-    return image_stats.mean()
-
-
-def old_calculate_image_stats():
-    fail_list = []
-    tweet_list = load_tweet_list()
-    image_stats = pd.DataFrame(columns=('width', 'height'))
-    for tweet_idx in range(len(tweet_list)):
-        image_size = get_size(tweet_list[tweet_idx], fail_list)
-        if image_size:
-            image_stats = image_stats.append(image_size, ignore_index=True)
-    print(len(image_stats))
-    print(len(fail_list))
-    print(image_stats.mode(axis=0))
-    print()
-    print(image_stats.mean())
-    print()
-    print(image_stats.median())
-    print()
-    print(image_stats.max())
-    print()
-    print(image_stats.min())
+        else:
+            times_converged = 0
+        # else:
+        start_idx += 50
+        print('\n' + str(start_idx) + ' images processed')
+        print(new_mean)
+        print(abs(new_mean - old_mean)/old_mean)
+        old_mean = new_mean
+        if start_idx + 50 > len(tweet_list):
+            converged = True
+    return image_stats.mean(), image_stats.std(), start_idx
 
 
 if __name__ == '__main__':
-    calculate_image_stats()
+    means, stddev, num_processed = calculate_image_stats()
+    print('mean values')
+    print(means)
+    print('\nstandard deviations:')
+    print(stddev)
+    print('\nImages processed:')
+    print(num_processed)
