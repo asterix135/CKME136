@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 TESTING = True
 
 
-def get_size(tweet, fail_list):
+def get_size(tweet):
     # image = Image.open(filepath)
     try:
         response = requests.get(tweet['image_url'])
@@ -25,7 +25,7 @@ def get_size(tweet, fail_list):
         pixels = width * height
         return {'width': width, 'height': height, 'pixels': pixels}
     except:
-        fail_list.append(tweet['tweet_id'])
+        remove_bad_image(tweet['tweet_id'])
         return False
 
 
@@ -38,42 +38,50 @@ def load_tweet_list():
         sql = "SELECT tweet_id, image_url " \
               "FROM Original_tweets"
         if TESTING:
-            sql = sql + ' LIMIT 50'
+            sql = sql + ' LIMIT 100'
         cursor.execute(sql)
         tweet_list = cursor.fetchall()
     connection.close()
     return tweet_list
 
 
-def remove_bad_images(fail_list):
+def remove_bad_image(tweet_id):
     """
-    Loops through fail list and removes from MySQL database
-    :param fail_list: list of tweet_id's for invalid images
+    Removes record from MySQL database
+    :param tweet_id: id for tweet to remove
     """
     connection = mysql.connect()
-    for tweet_id in fail_list:
-        with connection.cursor() as cursor:
-            sql = 'DELETE FROM Original_tweets WHERE tweet_id = %s'
-            cursor.execute(sql, tweet_id)
+    with connection.cursor() as cursor:
+        sql = 'DELETE FROM Original_tweets WHERE tweet_id = %s'
+        cursor.execute(sql, tweet_id)
     connection.commit()
     connection.close()
 
 
-def test_calculate_image_stats():
-    fail_list = []
+def calculate_image_stats():
     tweet_list = load_tweet_list()
     image_stats = pd.DataFrame(columns=('width', 'height', 'pixels'))
     tweet_idx = 0
+    old_mean = 10e10
+    converge_threshhold = 0.001
     converged = False
+    start_idx = 0
     while not converged:
-        image_size = get_size(tweet_list[tweet_idx], fail_list)
-        if image_size:
-            image_stats = image_stats.append(image_size, ignore_index=True)
+        for i in range(start_idx + 50):
+            image_size = get_size(tweet_list[tweet_idx])
+            if image_size:
+                image_stats = image_stats.append(image_size, ignore_index=True)
+        new_mean = image_stats.mean()['pixels']
+        if abs(new_mean - old_mean)/old_mean < converge_threshhold:
+            converged = True
+        else:
+            start_idx += 50
+            if start_idx + 50 < len(image_stats):
+                converged = True
+    return image_stats.mean()
 
 
-
-
-def calculate_image_stats():
+def old_calculate_image_stats():
     fail_list = []
     tweet_list = load_tweet_list()
     image_stats = pd.DataFrame(columns=('width', 'height'))
@@ -81,10 +89,6 @@ def calculate_image_stats():
         image_size = get_size(tweet_list[tweet_idx], fail_list)
         if image_size:
             image_stats = image_stats.append(image_size, ignore_index=True)
-        if len(fail_list) > 50:
-            remove_bad_images(fail_list)
-            print(str(tweet_list[tweet_idx]))
-            fail_list = []
     print(len(image_stats))
     print(len(fail_list))
     print(image_stats.mode(axis=0))
