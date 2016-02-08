@@ -20,6 +20,9 @@ from Python_code import sql_vals
 from Python_code.text_sentiment.vader import vader
 
 
+TESTING = False
+
+
 def mysql_connection():
     """
     helper function to connect to database
@@ -47,6 +50,8 @@ def pull_all_original_tweets():
     with connection.cursor() as cursor:
         sql = "SELECT tweet_id, username, text, processed_text " \
               "FROM Original_tweets"
+        if TESTING:
+            sql += ' LIMIT 50'
         cursor.execute(sql)
         original_tweets = cursor.fetchall()
     connection.close()
@@ -79,7 +84,7 @@ def calculate_vader(tweet):
     return return_sentiment_category(sentiment, 0.1)
 
 
-def load_afinn_dictionary(sentiment_file_location, splitter = '\t'):
+def load_afinn_dictionary(sentiment_file_location, splitter='\t'):
     """
     Creates a sentiment dictionary based on a text file
     dictionary needs to be lines of term and sentiment score
@@ -141,27 +146,28 @@ def update_database(sentiment_df):
     Updates database to indicate tweet sentiment and whether certainty
     tweet_sentiment: -1 = negative, 0 = neutral, 1 = positive
     unclear_sentiment: 0 = clear, 1 = unclear
-    :param result_matrix:
+    :param sentiment_df: Pandas dataframe with sentiment details
     :return:
     """
     # TODO: Complete this function
     connection = mysql_connection()
     for i in range(len(sentiment_df.index)):
         with connection.cursor() as cursor:
-            tweet = sentiment_df.ix[i,:]
+            tweet = sentiment_df.ix[i, :]
             sql = 'UPDATE Original_tweets SET tweet_sentiment = "%s", ' \
                   'unclear_sentiment = "%s" WHERE tweet_id = %s'
             clarity = int(not tweet['consistent'])
             sentiment = tweet['sentiment']
-            cursor.execute(sql, sentiment, clarity)
+            cursor.execute(sql,
+                           (tweet['sentiment'], clarity, tweet['tweet_id']))
     connection.commit()
     connection.close()
 
 
 def calculate_sentiments():
     """
-    Loops through various
-    :param tweet_list:
+    Loops through Tweets in database, calculates sentiment 3 ways and
+    updates database with value
     :return:
     """
     # 1. get tweet data into a dataframe
@@ -192,6 +198,9 @@ def calculate_sentiments():
     print('Neutral sentiment: ' + str(sum(tweet_df['sentiment'] == 0)))
     print('\nCorrelation stats:')
     figure_tweet_stats(tweet_df[['vader', 'afinn', 'huliu']])
+
+    # 6. Update database with sentiment & consistency values
+    # update_database(tweet_df)
 
 
 if __name__ == '__main__':
