@@ -53,7 +53,7 @@ def fetch_image(url, tweet_id, path, stats_df):
             filename = path + str(tweet_id) + '.jpg'
             img.save(filename)
     except Exception as err:
-        print('Error on tweet id: ' + str(tweet_id) + '. Execution halted.')
+        print('Error on tweet id: ' + str(tweet_id))
         print(err)
     return stats_df
 
