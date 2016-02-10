@@ -96,18 +96,16 @@ def fetch_all_images(path):
                         os.statvfs(path).f_frsize) / 1024
     tweet_list = load_tweet_list()
     image_stats = pd.DataFrame(columns=('width', 'height', 'pixels'))
-    not_warned = True
     for tweet in tweet_list:
         image_stats = fetch_image(tweet['image_url'],
                                   tweet['tweet_id'], path, image_stats)
-        if (len(image_stats) > 5000) and not_warned:
+        if (len(image_stats) % 5000 == 0):
             disk_avail = (os.statvfs(path).f_bavail *
                           os.statvfs(path).f_frsize) / 1024
             avg_img_size = (start_disk_space - disk_avail) / len(image_stats)
             imgs_to_go = len(tweet_list) - len(image_stats)
             if disk_avail/imgs_to_go < avg_img_size:
                 input('May run out of space:  Press Enter to continue')
-            not_warned = False
 
     # Save size histograms
     plot_histogram(image_stats, 'height')
