@@ -1,5 +1,6 @@
 """
 Download images to hard drive for easier processing
+Standardizes size to 400 x 400; jpeg format
 """
 
 import PIL
@@ -7,11 +8,13 @@ from PIL import Image
 from io import BytesIO
 import requests
 from Python_code import sql_connect as mysql
-import sys
+import pandas as pd
+import matplotlib.pyplot as plt
+import os
 
-PATH = '/Volumes/NeuralNet/Images/'
+PATH = '/Volumes/NeuralNet/images/'
 # PATH = ''
-TESTING = True
+TESTING = False
 
 
 def remove_bad_image(tweet_id):
@@ -27,13 +30,14 @@ def remove_bad_image(tweet_id):
     connection.close()
 
 
-def fetch_image(url, tweet_id, path):
+def fetch_image(url, tweet_id, path, stats_df):
     """
     Collects image from URL, resizes to 400x400 and saves to local drive
-    :param url:
-    :param tweet_id:
-    :param path:
-    :return:
+    :param url: image url
+    :param tweet_id: integer - will become file name
+    :param path: where file is to be saved
+    :param stats_df: data frame with original size data
+    :return stats_df: data frame with updated size data
     """
     try:
         response = requests.get(url)
@@ -41,15 +45,24 @@ def fetch_image(url, tweet_id, path):
             remove_bad_image(tweet_id)
         else:
             img = Image.open(BytesIO(response.content))
+            width, height = img.size
+            img_stats = {'width': width, 'height': height,
+                         'pixels': width * height}
+            stats_df = stats_df.append(img_stats, ignore_index=True)
             img = img.resize((400, 400), PIL.Image.ANTIALIAS)
             filename = path + str(tweet_id) + '.jpg'
             img.save(filename)
     except Exception as err:
         print('Error on tweet id: ' + str(tweet_id) + '. Execution halted.')
-        sys.exit(err)
+        print(err)
+    return stats_df
 
 
 def load_tweet_list():
+    """
+    Loads all tweets from MySQL, returns as list of dictionaries
+    :return tweet_list: list of dictionaries
+    """
     # open database connection
     connection = mysql.connect()
 
@@ -57,20 +70,54 @@ def load_tweet_list():
     with connection.cursor() as cursor:
         sql = "SELECT tweet_id, image_url FROM Original_tweets"
         if TESTING:
-            sql += ' LIMIT 100'
+            sql += ' LIMIT 50'
         cursor.execute(sql)
         tweet_list = cursor.fetchall()
     connection.close()
     return tweet_list
 
 
-def fetch_all_images(path):
-    tweet_list = load_tweet_list()
-    for tweet in tweet_list:
-        fetch_image(tweet['image_url'], tweet['tweet_id'], path)
+def plot_histogram(df, col_name):
+    fig, ax = plt.subplots()
+    df.hist(col_name, ax=ax)
+    fig.savefig(col_name + '_histogram.png')
 
-        # TODO: Something about free size on disk maybe
-        # see: http://stackoverflow.com/questions/787776/find-free-disk-space-in-python-on-os-x
+
+def fetch_all_images(path):
+    """
+    Main executing function
+    Loads all images from database, loads, resizes & frames
+    Maintains df with sizes
+    prints histograms of size data
+    :param path:
+    :return:
+    """
+    start_disk_space = (os.statvfs(path).f_bavail *
+                        os.statvfs(path).f_frsize) / 1024
+    tweet_list = load_tweet_list()
+    image_stats = pd.DataFrame(columns=('width', 'height', 'pixels'))
+    not_warned = True
+    for tweet in tweet_list:
+        image_stats = fetch_image(tweet['image_url'],
+                                  tweet['tweet_id'], path, image_stats)
+        if (len(image_stats) > 5000) and not_warned:
+            disk_avail = (os.statvfs(path).f_bavail *
+                          os.statvfs(path).f_frsize) / 1024
+            avg_img_size = (start_disk_space - disk_avail) / len(image_stats)
+            imgs_to_go = len(tweet_list) - len(image_stats)
+            if disk_avail/imgs_to_go < avg_img_size:
+                input('May run out of space:  Press Enter to continue')
+            not_warned = False
+
+    # Save size histograms
+    plot_histogram(image_stats, 'height')
+    plot_histogram(image_stats, 'width')
+
+    # Print Stats
+    print('\nAverage original:')
+    print(image_stats.mean())
+    print('\nStd Dev original:')
+    print(image_stats.std())
 
 
 if __name__ == '__main__':

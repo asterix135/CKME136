@@ -2,5 +2,6 @@
 2) Use process_raw_tweets.py to parse json files and put relevant data into mySQL
 3) use text_sentiment/compare_sentiments.py to calculate sentiment scores and update mySQL
 4) Use exploratory/image_sizes.py to get stats on image sizes
+5) Download images and standardize size to 400 x 400
 
 5) Standardize images to one size
