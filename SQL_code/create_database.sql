@@ -12,3 +12,13 @@ CREATE TABLE Original_tweets(
     created_ts DATETIME
 );
 
+CREATE TABLE Image_sizes (
+	width INT,
+    height INT,
+    pixels INT,
+    tweet_id BIGINT PRIMARY KEY,
+    CONSTRAINT Tweet_ref FOREIGN KEY (tweet_id)
+		REFERENCES Original_tweets (tweet_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);

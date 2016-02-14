@@ -30,6 +30,23 @@ def remove_bad_image(tweet_id):
     connection.close()
 
 
+def write_size(tweet_id, width, height):
+    """
+    Writes image size to MySQL
+    :param tweet_id:
+    :param width:
+    :param height:
+    :return:
+    """
+    connection = mysql.connect()
+    with connection.cursor() as cursor:
+        sql = 'INSERT INTO Image_sizes (tweet_id, width, height, pixels) ' \
+              'VALUES (%s, %s, %s, %s)'
+        cursor.execute(sql, (tweet_id, width, height, width * height))
+        connection.commit()
+        connection.close()
+
+
 def fetch_image(url, tweet_id, path, stats_df):
     """
     Collects image from URL, resizes to 400x400 and saves to local drive
@@ -41,7 +58,7 @@ def fetch_image(url, tweet_id, path, stats_df):
     """
     try:
         response = requests.get(url)
-        if response.status_code == 404:
+        if response.status_code == 404 or response.status_code == 403:
             remove_bad_image(tweet_id)
         else:
             img = Image.open(BytesIO(response.content))
@@ -49,6 +66,7 @@ def fetch_image(url, tweet_id, path, stats_df):
             img_stats = {'width': width, 'height': height,
                          'pixels': width * height}
             stats_df = stats_df.append(img_stats, ignore_index=True)
+            write_size(tweet_id, width, height)
             img = img.resize((400, 400), PIL.Image.ANTIALIAS)
             filename = path + str(tweet_id) + '.jpg'
             img.save(filename)
@@ -68,7 +86,10 @@ def load_tweet_list():
 
     # pull record id, username and image url from all downloaded tweets
     with connection.cursor() as cursor:
-        sql = "SELECT tweet_id, image_url FROM Original_tweets"
+        sql = "SELECT tweet_id, image_url FROM Original_tweets "
+              # "WHERE tweet_id <= 693431781333278720 " \
+              # "AND tweet_id > 692068905158770689"
+              # To get early: tweet_id <= 693431781333278720
         if TESTING:
             sql += ' LIMIT 50'
         cursor.execute(sql)
