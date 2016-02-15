@@ -1,5 +1,10 @@
+use TwitterImages;
 
 select count(*) from original_tweets;
+
+SELECT * FROM Original_tweets
+	ORDER BY tweet_id DESC
+    LIMIT 100;
 
 select * from original_tweets;
 
@@ -17,7 +22,7 @@ INSERT INTO Original_tweets (
 );
 
 SELECT * FROM Original_tweets
-	WHERE tweet_id = 123;
+	WHERE tweet_id = 692541368317665283;
 
 DELETE FROM Original_tweets WHERE tweet_id = 123;
 
@@ -34,3 +39,6 @@ DROP TABLE Reply_tweets;
 ALTER TABLE Original_tweets
 	ADD COLUMN processed_text VARCHAR(255) AFTER text;
     
+select count(*) from Image_sizes;
+
+delete from Image_sizes;

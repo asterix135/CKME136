@@ -3,30 +3,40 @@
 
 ## Project Abstract
 
-### Problem
+### Overview
 
-Much work has been done using text to identify sentiment in social media posts.
-However, much social media communication is image-based.  
-Classifying sentiment from these images has proved to be a larger challenge, 
-partially because of the difficulty in obtaining sufficient training data.
+These are the files for my Capstone Project in Ryerson University's Big Data
+Analytics certificate program.
 
-### Approach and Data
+The project attempts to classify sentiment in images.  The model
+I am building will define image sentiment of Twitter images based on the
+text that is posted accompanying those images. That model will be tested 
+against fresh Twitter data and against images whose sentiment has been 
+determined by crowd-sourcing.
 
-I propose to develop an unsupervised image sentiment classifier based on 
-streamed Twitter data.
+### Documentation
 
-### Methodology
+Documents submitted as part of the evaluation process are located in the
+[Submissions](/Submissions/) folder of this repo.
 
-First, I will generate a sentiment label based on text-based sentiment analysis, 
-taking into account both the original tweet and responses.
-
-I will use these text-derived sentiments to train a Neural-Network based 
-predictor on the tweeted images.  
-
+- [Abstract](/Submissions/Abstract_C_Graham_CKME136.pdf) - Initial Abstract
+- [Literature Review and Methodology](/Submissions/Lit_Review_C_Graham.pdf) -
+Initial review of related literature and details of project methodology
 
 ## Repo organization
 
 - [Submissions](/Submissions/) - Documents submitted for evaluation
 - [Python_code](/Python_code/) - Python code used in project
-- [R_code](/R_code/) - R code used in project
+- [R_code](/R_code/) - R code used in project (Currently empty)
 - [SQL_code](/SQL_code) - SQL code used in project
+
+### Methodology
+
+The most up-to-date details on the specific project methodology and code 
+execution can be found in the [code_step_by_step.txt](/code_step_by_step.txt) 
+file.
+
+### Contact Information
+
+Please direct any questions or comments to chgraham@gmail.com
+
