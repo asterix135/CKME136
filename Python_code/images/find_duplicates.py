@@ -10,7 +10,7 @@ Compares hashes using Hamming distance
 counts as duplicate if distance <= MAX_DIFF
     (MAX_DIFF is set manually, based on observation of results)
 """
-
+# TODO: Need to deal with case where searching for near match but exact match previously found
 
 import os
 from Python_code import sql_connect as mysql
@@ -40,18 +40,21 @@ def get_tweet_list():
     return results
 
 
-def find_matching_hash(hashcode):
+def find_matching_hash(hashcode, search_tweet_id):
     """
     Queries database to see if exactly matching hashcode exists for image
     If match exists, returns tweet_id of match
     else returns None
-    :param hashcode:
-    :return:
+    :param hashcode: hashcode of image being searched on
+    :param search_tweet_id: tweet_id of image being searched on
+    :return: None or matching tweet_id
     """
     connection = mysql.connect()
     with connection.cursor() as cursor:
-        sql = 'SELECT tweet_id from Original_tweets WHERE image_hash = %s'
-        cursor.execute(sql, hashcode)
+        sql = 'SELECT tweet_id from Original_tweets ' \
+              'WHERE image_hash = %s ' \
+              'AND tweet_id != %s'
+        cursor.execute(sql, (hashcode, search_tweet_id))
         match = cursor.fetchone()
         if match:
             match = match['tweet_id']
@@ -166,7 +169,7 @@ def process_image_hash(file_name):
     tweet_id = int(file_name[:-4])
     img = Image.open(IMAGE_PATH + file_name)
     img_hash = calculate_image_hash(img)
-    match = find_matching_hash(img_hash)
+    match = find_matching_hash(img_hash, tweet_id)
     if match:
         process_duplicate_image(match, tweet_id, img_hash)
     else:
