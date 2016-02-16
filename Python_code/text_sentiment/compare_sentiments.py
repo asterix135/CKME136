@@ -149,7 +149,6 @@ def update_database(sentiment_df):
     :param sentiment_df: Pandas dataframe with sentiment details
     :return:
     """
-    # TODO: Complete this function
     connection = mysql_connection()
     for i in range(len(sentiment_df.index)):
         with connection.cursor() as cursor:

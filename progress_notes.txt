@@ -1,14 +1,7 @@
 
 
-# TODO: 2) Load more twitter data and parse until we have at least 5000 negative images
-            Write images to disk
-
-
-
-
 # TODO: 3) Build Neural Net structure
 
-# TODO: 4) code in sentiment value to SQL save
 
 # TODO: 5) Build image test set & figure out how to score
         see download from:

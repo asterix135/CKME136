@@ -10,7 +10,6 @@ Compares hashes using Hamming distance
 counts as duplicate if distance <= MAX_DIFF
     (MAX_DIFF is set manually, based on observation of results)
 """
-# TODO: Need to deal with case where searching for near match but exact match previously found
 
 import os
 from Python_code import sql_connect as mysql
@@ -129,8 +128,9 @@ def process_duplicate_image(match_id, dupe_id, dupe_hash):
     """
     Updates MySQL database for tweets with a duplicated image as follows:
     1. Adds duplicate tweet info to Duplicate_images table linked to matched id
-    2. Deletes duplicate tweet record from Original_tweets table
-    3. Moves duplicate image to DUPE_IMAGE_PATH
+    2. Updates any entries in Duplicate_images that point to moved tweet
+    3. Deletes duplicate tweet record from Original_tweets table
+    4. Moves duplicate image to DUPE_IMAGE_PATH
     :param match_id: tweet_id of record to keep in Original_tweets
     :param dupe_id: tweet_id of record to move to Duplicate_images
     :param dupe_hash: hashcode for record being moved
@@ -141,6 +141,12 @@ def process_duplicate_image(match_id, dupe_id, dupe_hash):
               'WHERE tweet_id = %s'
         cursor.execute(sql, dupe_id)
         dupe = cursor.fetchone()
+
+        sql = 'UPDATE Duplicate_images ' \
+              'SET primary_tweet = %s ' \
+              'WHERE primary_tweet = %s'
+        cursor.execute(sql, (match_id, dupe_id))
+
         sql = 'INSERT INTO Duplicate_images ( ' \
               'tweet_id, primary_tweet, username, text, processed_text, ' \
               'image_url, tweet_sentiment, created_ts, image_hash) ' \
@@ -149,6 +155,7 @@ def process_duplicate_image(match_id, dupe_id, dupe_hash):
                              dupe['text'], dupe['processed_text'],
                              dupe['image_url'], dupe['tweet_sentiment'],
                              dupe['created_ts'], dupe_hash))
+
         sql = 'DELETE FROM Original_tweets ' \
               'WHERE tweet_id = %s'
         cursor.execute(sql, dupe_id)
