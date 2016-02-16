@@ -3,4 +3,5 @@
 3) use text_sentiment/compare_sentiments.py to calculate sentiment scores and update mySQL
 4) Use exploratory/image_sizes.py to get stats on image sizes
 5) Download images and standardize size to 400 x 400 using download_images.py
+6) Identify duplicate images; move all but one duplicate to linked MySQL table: find_duplicates.py
 

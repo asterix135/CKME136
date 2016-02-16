@@ -24,7 +24,7 @@ INSERT INTO Original_tweets (
 SELECT * FROM Original_tweets
 	WHERE tweet_id = 692541368317665283;
 
-DELETE FROM Original_tweets WHERE tweet_id = 123;
+DELETE FROM Original_tweets WHERE tweet_id = 692108788791431168;
 
 DELETE FROM Original_tweets WHERE tweet_id > 691363834263633921;
 
@@ -42,3 +42,6 @@ ALTER TABLE Original_tweets
 select count(*) from Image_sizes;
 
 delete from Image_sizes;
+
+ALTER TABLE Original_tweets
+	ADD COLUMN image_hash CHAR(36) AFTER created_ts;
