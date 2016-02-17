@@ -1,4 +1,12 @@
- vader afinn huliu
-vader 1.000 0.520 0.422
-afinn 0.520 1.000 0.667
-huliu 0.422 0.667 1.000
+/Library/Frameworks/Python.framework/Versions/3.5/bin/python3.5 /Users/christophergraham/Documents/School/Ryerson_program/CKME136/Python_code/text_sentiment/compare_sentiments.py
+Positive sentiment: 18419
+Negative sentiment: 6279
+Neutral sentiment: 59187
+
+Correlation stats:
+          vader     afinn     huliu
+vader  1.000000  0.517881  0.421065
+afinn  0.517881  1.000000  0.670712
+huliu  0.421065  0.670712  1.000000
+
+Process finished with exit code 0
