@@ -15,7 +15,6 @@ do with disagreement
 
 import pymysql.cursors
 import pandas as pd
-import numpy as np
 from Python_code import sql_vals
 from Python_code.text_sentiment.vader import vader
 
@@ -153,12 +152,12 @@ def update_database(sentiment_df):
     for i in range(len(sentiment_df.index)):
         with connection.cursor() as cursor:
             tweet = sentiment_df.ix[i, :]
-            sql = 'UPDATE Original_tweets SET tweet_sentiment = "%s", ' \
-                  'unclear_sentiment = "%s" WHERE tweet_id = %s'
+            sql = 'UPDATE Original_tweets SET tweet_sentiment = %s, ' \
+                  'unclear_sentiment = %s WHERE tweet_id = %s'
             clarity = int(not tweet['consistent'])
-            sentiment = tweet['sentiment']
+            sentiment = int(tweet['sentiment'])
             cursor.execute(sql,
-                           (tweet['sentiment'], clarity, tweet['tweet_id']))
+                           (sentiment, clarity, int(tweet['tweet_id'])))
     connection.commit()
     connection.close()
 
@@ -190,8 +189,10 @@ def calculate_sentiments():
                                             x['vader'] ==
                                             x['afinn'] ==
                                             x['huliu'], axis=1)
-    tweet_df['sentiment'] = np.where(tweet_df['consistent'] == True,
-                                     tweet_df['vader'], None)
+    # I think it's better to ascribe Vader sentiment irrespective of consistency
+    # tweet_df['sentiment'] = np.where(tweet_df['consistent'] == True,
+    #                                  tweet_df['vader'], 99)
+    tweet_df['sentiment'] = tweet_df['vader']
     print('Positive sentiment: ' + str(sum(tweet_df['sentiment'] == 1)))
     print('Negative sentiment: ' + str(sum(tweet_df['sentiment'] == -1)))
     print('Neutral sentiment: ' + str(sum(tweet_df['sentiment'] == 0)))
@@ -199,7 +200,8 @@ def calculate_sentiments():
     figure_tweet_stats(tweet_df[['vader', 'afinn', 'huliu']])
 
     # 6. Update database with sentiment & consistency values
-    # update_database(tweet_df)
+    print('\nupdating database...')
+    update_database(tweet_df)
 
 
 if __name__ == '__main__':
