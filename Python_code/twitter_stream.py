@@ -1,14 +1,15 @@
 """
 Run from command line
-Need to run as python2 because python3 outputs binary & is a pain to parse
-python2 twitter_stream.py > output_file_name.txt
+works as either python 2 or 3
+python twitter_stream.py > output_file_name.txt
 """
 
 import oauth2 as oauth
 # to run as python2
-import urllib2 as urllib
-# to run as python3, need the following library
-# import urllib.request as urllib
+try:
+    import urllib2 as urllib
+except:
+    import urllib.request as urllib
 import twitter_vals as tv
 
 
@@ -65,6 +66,8 @@ def fetchsamples():
     parameters = []
     response = twitterreq(url, "GET", parameters)
     for line in response:
+        if isinstance(line, bytes):
+            line = line.decode('utf-8')
         print(line.strip())
 
 if __name__ == '__main__':

@@ -25,8 +25,8 @@ def subset_tweets(tweet_file):
             curr_tweet = json.loads(line)
             if decide_to_include_tweet(curr_tweet):
                 tweets.append(curr_tweet)
-        except:
-            pass
+        except Exception as err:
+            print(err)
     return tweets
 
 

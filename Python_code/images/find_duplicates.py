@@ -16,6 +16,7 @@ from Python_code import sql_connect as mysql
 from PIL import Image
 import math
 import pandas as pd
+import time
 
 
 IMAGE_PATH = '/Volumes/NeuralNet/images/'
@@ -139,26 +140,28 @@ def process_duplicate_image(match_id, dupe_id, dupe_hash):
     with connection.cursor() as cursor:
         sql = 'SELECT * FROM Original_tweets ' \
               'WHERE tweet_id = %s'
-        cursor.execute(sql, dupe_id)
+        cursor.execute(sql, int(dupe_id))
         dupe = cursor.fetchone()
 
         sql = 'UPDATE Duplicate_images ' \
               'SET primary_tweet = %s ' \
               'WHERE primary_tweet = %s'
-        cursor.execute(sql, (match_id, dupe_id))
+        cursor.execute(sql, (int(match_id), int(dupe_id)))
 
-        sql = 'INSERT INTO Duplicate_images ( ' \
-              'tweet_id, primary_tweet, username, text, processed_text, ' \
-              'image_url, tweet_sentiment, created_ts, image_hash) ' \
-              'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)'
-        cursor.execute(sql, (dupe['tweet_id'], match_id, dupe['username'],
-                             dupe['text'], dupe['processed_text'],
-                             dupe['image_url'], dupe['tweet_sentiment'],
-                             dupe['created_ts'], dupe_hash))
+        if dupe:
+            sql = 'INSERT INTO Duplicate_images ( ' \
+                  'tweet_id, primary_tweet, username, text, processed_text, ' \
+                  'image_url, tweet_sentiment, created_ts, image_hash) ' \
+                  'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)'
+            cursor.execute(sql, (int(dupe['tweet_id']), int(match_id),
+                                 dupe['username'], dupe['text'],
+                                 dupe['processed_text'], dupe['image_url'],
+                                 int(dupe['tweet_sentiment']),
+                                 dupe['created_ts'], dupe_hash))
 
         sql = 'DELETE FROM Original_tweets ' \
               'WHERE tweet_id = %s'
-        cursor.execute(sql, dupe_id)
+        cursor.execute(sql, int(dupe_id))
     connection.commit()
     connection.close()
     # Move dupe image file
@@ -191,24 +194,36 @@ def remove_original_tweet(tweet_id):
     connection = mysql.connect()
     with connection.cursor() as cursor:
         sql = 'DELETE FROM Original_tweets WHERE tweet_id = %s'
-        cursor.execute(sql, tweet_id)
+        cursor.execute(sql, int(tweet_id))
     connection.commit()
     connection.close()
 
 
 def main():
-    for file in os.listdir(IMAGE_PATH):
-        if file.endswith('.jpg'):
-            try:
-                process_image_hash(file)
-            except Exception as err:
-                print('Error on image: ' + str(file))
-                print(err)
+    # print('start: ' + str(time.time()))
+    # counter = 0
+    # for file in os.listdir(IMAGE_PATH):
+    #     counter += 1
+    #     if counter % 1000 == 0:
+    #         print(time.time())
+    #         print(counter)
+    #     if file.endswith('.jpg'):
+    #         try:
+    #             process_image_hash(file)
+    #         except Exception as err:
+    #             print('Error on image: ' + str(file))
+    #             print(err)
+
+    print('hashing complete')
     # double loop to check for near misses
     # 1. get df with tweet_ids & hash values from mysql
     tweet_list = get_tweet_list()
     # 2. double loop
+    start_time = time.time()
     for i in range(len(tweet_list) - 1):
+        if i % 100 == 0:
+            print(str(start_time - time.time()) + ' seconds running')
+            print(i, len(tweet_list))
         if not tweet_list.at[i, 'image_hash']:
             remove_original_tweet(tweet_list.at[i, 'tweet_id'])
             continue
