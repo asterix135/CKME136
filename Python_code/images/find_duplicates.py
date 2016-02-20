@@ -148,16 +148,20 @@ def process_duplicate_image(match_id, dupe_id, dupe_hash):
               'WHERE primary_tweet = %s'
         cursor.execute(sql, (int(match_id), int(dupe_id)))
 
-        if dupe:
+        try:
             sql = 'INSERT INTO Duplicate_images ( ' \
                   'tweet_id, primary_tweet, username, text, processed_text, ' \
-                  'image_url, tweet_sentiment, created_ts, image_hash) ' \
-                  'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)'
+                  'image_url, tweet_sentiment, created_ts, image_hash, ' \
+                  'unclear_sentiment) ' \
+                  'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
             cursor.execute(sql, (int(dupe['tweet_id']), int(match_id),
                                  dupe['username'], dupe['text'],
                                  dupe['processed_text'], dupe['image_url'],
                                  int(dupe['tweet_sentiment']),
-                                 dupe['created_ts'], dupe_hash))
+                                 dupe['created_ts'], dupe_hash,
+                                 int(dupe['unclear_sentiment'])))
+        except Exception as err:
+            print(err + ' on record ' + str(dupe_id))
 
         sql = 'DELETE FROM Original_tweets ' \
               'WHERE tweet_id = %s'
@@ -166,8 +170,11 @@ def process_duplicate_image(match_id, dupe_id, dupe_hash):
     connection.close()
     # Move dupe image file
     file_name = str(dupe_id) + '.jpg'
-    os.rename(IMAGE_PATH + file_name, DUPE_IMAGE_PATH + file_name)
-
+    try:
+        os.rename(IMAGE_PATH + file_name, DUPE_IMAGE_PATH + file_name)
+    except Exception as err:
+        print('error on ' + file_name)
+        print(err)
 
 def process_image_hash(file_name):
     """
@@ -200,12 +207,13 @@ def remove_original_tweet(tweet_id):
 
 
 def main():
-    # print('start: ' + str(time.time()))
+
+    # start_time = time.time()
     # counter = 0
     # for file in os.listdir(IMAGE_PATH):
     #     counter += 1
     #     if counter % 1000 == 0:
-    #         print(time.time())
+    #         print(time.time() - start_time)
     #         print(counter)
     #     if file.endswith('.jpg'):
     #         try:
@@ -213,31 +221,35 @@ def main():
     #         except Exception as err:
     #             print('Error on image: ' + str(file))
     #             print(err)
+    # print('hashing complete')
 
-    print('hashing complete')
     # double loop to check for near misses
     # 1. get df with tweet_ids & hash values from mysql
     tweet_list = get_tweet_list()
     # 2. double loop
     start_time = time.time()
-    for i in range(len(tweet_list) - 1):
+    for i in range(6100, len(tweet_list) - 1):
         if i % 100 == 0:
-            print(str(start_time - time.time()) + ' seconds running')
+            print('\n'+ str(time.time() - start_time) + ' interval time')
             print(i, len(tweet_list))
+            start_time = time.time()
         if not tweet_list.at[i, 'image_hash']:
             remove_original_tweet(tweet_list.at[i, 'tweet_id'])
             continue
         for j in range(i + 1, len(tweet_list)):
-            if not tweet_list.at[j, 'image_hash']:
-                remove_original_tweet(tweet_list.at[j, 'tweet_id'])
-                continue
-            dist = hamming_distance(tweet_list.at[i, 'image_hash'],
-                                    tweet_list.at[j, 'image_hash'])
-            if dist <= MAX_DIFF:
-                process_duplicate_image(tweet_list.at[i, 'tweet_id'],
-                                        tweet_list.at[j, 'tweet_id'],
+            try:
+                if not tweet_list.at[j, 'image_hash']:
+                    remove_original_tweet(tweet_list.at[j, 'tweet_id'])
+                    continue
+                dist = hamming_distance(tweet_list.at[i, 'image_hash'],
                                         tweet_list.at[j, 'image_hash'])
-
+                if dist <= MAX_DIFF:
+                    process_duplicate_image(tweet_list.at[i, 'tweet_id'],
+                                            tweet_list.at[j, 'tweet_id'],
+                                        tweet_list.at[j, 'image_hash'])
+            except Exception as err:
+                print(err + ' on '+ str(tweet_list.at[i, 'tweet_id']) + ', ' +
+                      str(tweet_list.at[j, 'tweet_id']))
 
 def test():
     import matplotlib.pyplot as plt
