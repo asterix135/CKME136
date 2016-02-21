@@ -228,7 +228,7 @@ def main():
     tweet_list = get_tweet_list()
     # 2. double loop
     start_time = time.time()
-    for i in range(6100, len(tweet_list) - 1):
+    for i in range(12600, len(tweet_list) - 1):
         if i % 100 == 0:
             print('\n'+ str(time.time() - start_time) + ' interval time')
             print(i, len(tweet_list))
@@ -248,7 +248,8 @@ def main():
                                             tweet_list.at[j, 'tweet_id'],
                                         tweet_list.at[j, 'image_hash'])
             except Exception as err:
-                print(err + ' on '+ str(tweet_list.at[i, 'tweet_id']) + ', ' +
+                print(err)
+                print('on '+ str(tweet_list.at[i, 'tweet_id']) + ', ' +
                       str(tweet_list.at[j, 'tweet_id']))
 
 def test():
