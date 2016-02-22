@@ -18,7 +18,7 @@ def english_word_list():
     # option 1: all english words
     wordlist = '/usr/share/dict/words'
     # option 2: sentiment words only
-    wordlist = 'hashtag_dict.txt'
+    # wordlist = 'hashtag_dict.txt'
     with open(wordlist) as f:
         content = f.readlines()
     english_words = [word.rstrip('\n').lower() for word in content]
