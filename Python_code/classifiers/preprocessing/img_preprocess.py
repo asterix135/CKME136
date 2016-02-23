@@ -25,7 +25,10 @@ def img_to_flat_matrix(filename):
     if img.size != SIZE:
         img = img.resize(SIZE, Image.ANTIALIAS)
     img = np.array(img.getdata())
-    img_size = img.shape[0] * img.shape[1]
+    if len(img.shape) == 1:
+        img_size = img.shape[0]
+    else:
+        img_size = img.shape[0] * img.shape[1]
     img_wide = img.reshape(1, img_size)
     return img_wide[0]
 
@@ -55,22 +58,23 @@ def get_data(class_count=5000):
     put data into Numpy array
     put category data into list
     requires Database pull
+    returns equal number of examples per class
     :return:
     """
     data = []
     connection = mysql.connect()
     with connection.cursor() as cursor:
-        sql = 'SELECT tweet_id, tweet_sentiment FROM Original_images ' \
+        sql = '(SELECT tweet_id, tweet_sentiment FROM Original_tweets ' \
               'WHERE unclear_sentiment = 0 AND tweet_sentiment = 0 ' \
-              'LIMIT ' + str(class_count) + ' ' \
-              'UNION ' \
-              'SELECT tweet_id, tweet_sentiment FROM Original_images ' \
+              'LIMIT ' + str(class_count) + ') ' \
+              'UNION ALL ' \
+              '(SELECT tweet_id, tweet_sentiment FROM Original_tweets ' \
               'WHERE unclear_sentiment = 0 AND tweet_sentiment = 1 ' \
-              'LIMIT ' + str(class_count) + ' ' \
-              'UNION ' \
-              'SELECT tweet_id, tweet_sentiment FROM Original_images ' \
+              'LIMIT ' + str(class_count) + ') ' \
+              'UNION ALL ' \
+              '(SELECT tweet_id, tweet_sentiment FROM Original_tweets ' \
               'WHERE unclear_sentiment = 0 AND tweet_sentiment = -1 ' \
-              'LIMIT ' + str(class_count)
+              'LIMIT ' + str(class_count) + ')'
         cursor.execute(sql)
         results = pd.DataFrame(cursor.fetchall())
     connection.close()
@@ -80,7 +84,7 @@ def get_data(class_count=5000):
         img = img_to_flat_matrix(image)
         data.append(img)
     data = np.array(data)
-    return data, results['tweet_sentiment']
+    return data, np.array(results['tweet_sentiment'])
 
 
 

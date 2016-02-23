@@ -7,6 +7,7 @@ from Python_code import twitter_stream as ts
 from Python_code import process_raw_tweets as prt
 from Python_code.text_sentiment import compare_sentiments as cs
 from Python_code.text_sentiment import split_hashtag as sh
+from Python_code.images import find_duplicates as dedupe
 from PIL import Image
 import json
 import time
@@ -30,7 +31,7 @@ def fetch_image(url):
         return
 
 
-def fetchsamples(needed_sent_val=None):
+def fetchsamples(needed_sent_val=None, max_iters = 1000):
     word_list = sh.english_word_list()
     afinn_dict = cs.load_afinn_dictionary('text_sentiment/AFINN-111.txt')
     huliu_dict = \
@@ -38,8 +39,13 @@ def fetchsamples(needed_sent_val=None):
     url = "https://stream.twitter.com/1/statuses/sample.json"
     parameters = []
     response = ts.twitterreq(url, "GET", parameters)
+    num_iters = 0
 
     for line in response:
+
+        if num_iters > max_iters:
+            break
+
         if isinstance(line, bytes):
             line = line.decode('utf-8')
 
@@ -71,14 +77,16 @@ def fetchsamples(needed_sent_val=None):
         # retrieve and hash image
         image_url = tweet['extended_entities']['media'][0]['media_url']
         img = fetch_image(image_url)
-        image_hash = None
-
-
+        image_hash = dedupe.calculate_image_hash(img)
+        if dedupe.find_matching_hash(image_hash, tweet['id']):
+            #################################
+            print('need to do something here')
 
         # Ensure not an exact duplicate
 
         # Save image
         # img.save(IMAGE_SAVE_PATH + tweet['id_str'] + '.jpg')
+        num_iters += 1
 
     return
 
