@@ -27,6 +27,8 @@ def img_to_flat_matrix(filename):
     img = np.array(img.getdata())
     if len(img.shape) == 1:
         img_size = img.shape[0]
+        print(filename)
+        return None
     else:
         img_size = img.shape[0] * img.shape[1]
     img_wide = img.reshape(1, img_size)

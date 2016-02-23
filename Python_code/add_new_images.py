@@ -8,6 +8,7 @@ from Python_code import process_raw_tweets as prt
 from Python_code.text_sentiment import compare_sentiments as cs
 from Python_code.text_sentiment import split_hashtag as sh
 from Python_code.images import find_duplicates as dedupe
+from Python_code import sql_connect as mysql
 from PIL import Image
 import json
 import time
@@ -15,8 +16,8 @@ import requests
 from io import BytesIO
 
 
-IMAGE_SAVE_PATH = '/Users/chris/Downloads/misc/'
-# IMAGE_SAVE_PATH = '/Volumes/NeuralNet/images/'
+# IMAGE_SAVE_PATH = '/Users/chris/Downloads/misc/'
+IMAGE_SAVE_PATH = '/Volumes/NeuralNet/images/'
 
 
 def fetch_image(url):
@@ -29,6 +30,49 @@ def fetch_image(url):
         return img
     except Exception:
         return
+
+
+def add_dupe_to_db(dupe_tweet, match_id, dupe_sentiment, img_hash, proc_txt):
+    timestamp = prt.convert_twitter_date_to_datetime(dupe_tweet['created_at'])
+    connection = mysql.connect()
+    with connection.cursor() as cursor:
+
+        sql = 'INSERT INTO Duplicate_images ( ' \
+              'tweet_id, primary_tweet, username, text, processed_text, ' \
+              'image_url, tweet_sentiment, created_ts, image_hash, ' \
+              'unclear_sentiment) ' \
+              'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 0)'
+        cursor.execute(sql, (int(dupe_tweet['id']),
+                             int(match_id),
+                             dupe_tweet['user']['screen_name'],
+                             dupe_tweet['text'],
+                             proc_txt,
+                             dupe_tweet['extended_entities']['media'][0]['media_url'],
+                             dupe_sentiment,
+                             timestamp,
+                             img_hash))
+    connection.commit()
+    connection.close()
+
+
+def add_new_record_to_db(tweet, sentiment, img_hash, proc_txt):
+    timestamp = prt.convert_twitter_date_to_datetime(tweet['created_at'])
+    connection = mysql.connect()
+    with connection.cursor() as cursor:
+        sql = 'INSERT INTO Original_tweets (' \
+              'tweet_id, username, text, processed_text, image_url, ' \
+              'tweet_sentiment, unclear_sentiment, created_ts, image_hash) ' \
+              'VALUES (%s, %s, %s, %s, %s, %s, 0, %s, %s)'
+        cursor.execute(sql, (int(tweet['id']),
+                             tweet['user']['screen_name'],
+                             tweet['text'],
+                             proc_txt,
+                             tweet['extended_entities']['media'][0]['media_url'],
+                             sentiment,
+                             timestamp,
+                             img_hash))
+    connection.commit()
+    connection.close()
 
 
 def fetchsamples(needed_sent_val=None, max_iters = 1000):
@@ -54,6 +98,7 @@ def fetchsamples(needed_sent_val=None, max_iters = 1000):
             tweet = json.loads(line.strip())
         except Exception as err:
             time.sleep(1)
+            print('waiting....')
             continue
 
         # stop processing if tweet doesn't meet basic criteria
@@ -71,25 +116,34 @@ def fetchsamples(needed_sent_val=None, max_iters = 1000):
         consistent = vader_sent == afinn_sent == hului_sent
         if not consistent:
             continue
-        if needed_sent_val and vader_sent != needed_sent_val:
+        if needed_sent_val and (vader_sent != needed_sent_val):
             continue
 
         # retrieve and hash image
         image_url = tweet['extended_entities']['media'][0]['media_url']
         img = fetch_image(image_url)
         image_hash = dedupe.calculate_image_hash(img)
-        if dedupe.find_matching_hash(image_hash, tweet['id']):
-            #################################
-            print('need to do something here')
 
         # Ensure not an exact duplicate
+        match = dedupe.find_matching_hash(image_hash, tweet['id'])
+        if match:
+            add_dupe_to_db(tweet, match, vader_sent, image_hash, cleaned_text)
+            continue
 
-        # Save image
-        # img.save(IMAGE_SAVE_PATH + tweet['id_str'] + '.jpg')
+        # Save image and write info to db
+        try:
+            add_new_record_to_db(tweet, vader_sent, image_hash, cleaned_text)
+            img.save(IMAGE_SAVE_PATH + tweet['id_str'] + '.jpg')
+        except Exception as err:
+            print(err)
+            print(tweet['text'])
+            print(type(tweet['text']))
+            print()
+            continue
         num_iters += 1
 
     return
 
 
 if __name__ == '__main__':
-    fetchsamples()
+    fetchsamples(0, 85)
