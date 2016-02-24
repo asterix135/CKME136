@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 def get_unique_repeats():
     connection = mysql.connect()
     with connection.cursor() as cursor:
-        sql = 'SELECT DISTINCT primary_tweet, ' \
+        sql = 'SELECT DISTINCT primary_tweet ' \
               'FROM Duplicate_images'
         cursor.execute(sql)
         repeat_df = pd.DataFrame(cursor.fetchall())
@@ -22,13 +22,13 @@ def get_unique_repeats():
 def get_all_same(tweet_id):
     connection = mysql.connect()
     with connection.cursor() as cursor:
-        sql = 'SELECT unclear_sentiment, tweet_sentiment ' \
+        sql = '(SELECT unclear_sentiment, tweet_sentiment ' \
               'FROM Duplicate_images ' \
-              'WHERE primary_tweet = %s ' \
+              'WHERE primary_tweet = %s) ' \
               'UNION ALL' \
-              'SELECT unclear_sentiment, tweet_sentiment ' \
-              'FROM Original_tweet ' \
-              'WHERE tweet_id = %s'
+              '(SELECT unclear_sentiment, tweet_sentiment ' \
+              'FROM Original_tweets ' \
+              'WHERE tweet_id = %s)'
         cursor.execute(sql, (tweet_id, tweet_id))
         dupes = pd.DataFrame(cursor.fetchall())
     connection.close()

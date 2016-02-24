@@ -127,7 +127,11 @@ def fetchsamples(needed_sent_val=None, max_iters = 1000):
         # Ensure not an exact duplicate
         match = dedupe.find_matching_hash(image_hash, tweet['id'])
         if match:
-            add_dupe_to_db(tweet, match, vader_sent, image_hash, cleaned_text)
+            try:
+                add_dupe_to_db(tweet, match, vader_sent,
+                               image_hash, cleaned_text)
+            except Exception as err:
+                print(err)
             continue
 
         # Save image and write info to db
@@ -136,9 +140,6 @@ def fetchsamples(needed_sent_val=None, max_iters = 1000):
             img.save(IMAGE_SAVE_PATH + tweet['id_str'] + '.jpg')
         except Exception as err:
             print(err)
-            print(tweet['text'])
-            print(type(tweet['text']))
-            print()
             continue
         num_iters += 1
 
@@ -146,4 +147,7 @@ def fetchsamples(needed_sent_val=None, max_iters = 1000):
 
 
 if __name__ == '__main__':
-    fetchsamples(0, 85)
+    fetchsamples(-1, 5000)
+
+    # 122809
+    # should stop at 127809 or so

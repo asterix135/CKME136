@@ -12,7 +12,7 @@ import pandas as pd
 import time
 
 
-data, labels = prep.get_data(100)
+data, labels = prep.get_data(500)
 
 # split test & train sets
 np.random.seed(2222016)
@@ -33,5 +33,7 @@ print('processing time: ' + str(time.time() - start_time))
 
 print(pd.crosstab(test_y, knn.predict(test_x), rownames=['Actual'],
             colnames=['Predicted']))
+
+# TODO: Test against crowdflower data
 
 

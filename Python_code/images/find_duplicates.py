@@ -208,27 +208,27 @@ def remove_original_tweet(tweet_id):
 
 def main():
 
-    # start_time = time.time()
-    # counter = 0
-    # for file in os.listdir(IMAGE_PATH):
-    #     counter += 1
-    #     if counter % 1000 == 0:
-    #         print(time.time() - start_time)
-    #         print(counter)
-    #     if file.endswith('.jpg'):
-    #         try:
-    #             process_image_hash(file)
-    #         except Exception as err:
-    #             print('Error on image: ' + str(file))
-    #             print(err)
-    # print('hashing complete')
+    start_time = time.time()
+    counter = 0
+    for file in os.listdir(IMAGE_PATH):
+        counter += 1
+        if counter % 1000 == 0:
+            print(time.time() - start_time)
+            print(counter)
+        if file.endswith('.jpg'):
+            try:
+                process_image_hash(file)
+            except Exception as err:
+                print('Error on image: ' + str(file))
+                print(err)
+    print('hashing complete')
 
     # double loop to check for near misses
     # 1. get df with tweet_ids & hash values from mysql
     tweet_list = get_tweet_list()
     # 2. double loop
     start_time = time.time()
-    for i in range(12600, len(tweet_list) - 1):
+    for i in range(len(tweet_list) - 1):
         if i % 100 == 0:
             print('\n'+ str(time.time() - start_time) + ' interval time')
             print(i, len(tweet_list))
