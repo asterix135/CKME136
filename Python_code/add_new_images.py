@@ -28,7 +28,7 @@ def fetch_image(url):
         img = Image.open(BytesIO(response.content))
         img = img.resize((400, 400), Image.ANTIALIAS)
         return img
-    except Exception:
+    except:
         return
 
 
@@ -75,7 +75,7 @@ def add_new_record_to_db(tweet, sentiment, img_hash, proc_txt):
     connection.close()
 
 
-def fetchsamples(needed_sent_val=None, max_iters = 1000):
+def fetchsamples(needed_sent_val=None, max_iters=1000):
     word_list = sh.english_word_list()
     afinn_dict = cs.load_afinn_dictionary('text_sentiment/AFINN-111.txt')
     huliu_dict = \
@@ -96,7 +96,7 @@ def fetchsamples(needed_sent_val=None, max_iters = 1000):
         # decode if not error message; else wait 1 sec to avoid rate limits
         try:
             tweet = json.loads(line.strip())
-        except Exception as err:
+        except:
             time.sleep(1)
             print('waiting....')
             continue
@@ -148,6 +148,3 @@ def fetchsamples(needed_sent_val=None, max_iters = 1000):
 
 if __name__ == '__main__':
     fetchsamples(-1, 5000)
-
-    # 122809
-    # should stop at 127809 or so

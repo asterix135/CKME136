@@ -40,3 +40,10 @@ CREATE TABLE Duplicate_images(
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
+
+CREATE TABLE Crowdflower(
+	image_id BIGINT PRIMARY KEY,
+    sentiment TINYINT,
+    unclear_sentiment TINYINT,
+    image_url VARCHAR(255)
+);
