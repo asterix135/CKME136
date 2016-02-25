@@ -23,7 +23,12 @@ def download_image(url, image_id):
 def add_to_db(image_id, sentiment, unclear_sentiment, image_url):
     connection = mysql.connect()
     with connection.cursor() as cursor:
-        sql = 'INSERT INTO '
+        sql = 'INSERT INTO Crowdflower ( ' \
+              'image_id, sentiment, unclear_sentiment, image_url)' \
+              'VALUES (%s, %s, %s, %s)'
+        cursor.execute(sql, (image_id, sentiment, unclear_sentiment, image_url))
+    connection.commit()
+    connection.close()
 
 
 curr_dir = os.getcwd()
@@ -33,14 +38,17 @@ cf_images = pd.read_csv('Sentiment-Polarity-DFE.csv')
 
 
 
-for row in range(5):
+for row in range(len(cf_images)):
     image_id = int(cf_images.at[row,'_unit_id'])
-    sentiment = 1 if 'ositive' in \
-                     cf_images.at[row, 'which_of_these_sentiment_scores_does_the_above_image_fit_into_best'] \
+    sentiment = 1 \
+        if 'ositive' in \
+           cf_images.at[row, 'which_of_these_sentiment_scores_does_the_above_image_fit_into_best'] \
         else -1
-    unclear_sentiment = 0 if \
-        cf_images.at[row, 'which_of_these_sentiment_scores_does_the_above_image_fit_into_best:confidence'] > .66 \
+    unclear_sentiment = 0 \
+        if cf_images.at[row, 'which_of_these_sentiment_scores_does_the_above_image_fit_into_best:confidence'] > .66 \
         else 1
     image_url = cf_images.at[row, 'imageurl']
-    # download_image(image_url, image_id)
-    print(image_id, sentiment, unclear_sentiment, image_url)
+    download_image(image_url, image_id)
+    add_to_db(image_id, sentiment, unclear_sentiment, image_url)
+    if row % 100 == 0:
+        print(row)
