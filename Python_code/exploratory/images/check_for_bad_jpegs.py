@@ -1,11 +1,17 @@
 from PIL import Image
 import os
+import platform
 
-for file in os.listdir('/Volumes/NeuralNet/images/'):
+if platform.platform[:5] == 'Linux':
+    IMAGE_DIR = '/home/ec2-user/images/'
+else:
+    IMAGE_DIR = '/Volumes/NeuralNet/images/'
+
+for file in os.listdir(IMAGE_DIR):
     if file.endswith('jpg'):
         try:
-            img = Image.open('/Volumes/NeuralNet/images/' + file)
+            img = Image.open(IMAGE_DIR + file)
         except Exception as err:
             print("Error on image: " + str(file))
             print(err)
-            os.remove('/Volumes/NeuralNet/images/' + file)
+            os.remove(IMAGE_DIR + file)

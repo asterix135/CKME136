@@ -13,18 +13,22 @@ set sql_safe_updates = 0;
 delete from original_tweets;
 
 INSERT INTO Original_tweets (
-	tweet_id, username, text, image_url, created_ts)
-    VALUES (123, 
+	tweet_id, username, text, image_url, created_ts, image_hash)
+    VALUES (1234, 
 			'testuser',
 			'test text', 
             'http://pbs.twimg.com/media/CZg3zEtWYAIC4G9.jpg', 
-            '2016-01-24 15:55:40'
+            '2016-01-24 15:55:40',
+            'testhash'
 );
 
-SELECT * FROM Original_tweets
-	WHERE tweet_id = 692541368317665283;
+DELETE FROM Original_tweets
+	WHERE tweet_id = 691715975431913472;
 
-DELETE FROM Original_tweets WHERE tweet_id = 692108788791431168;
+SELECT * FROM Original_tweets
+	WHERE tweet_id = 12345;
+
+DELETE FROM Original_tweets WHERE tweet_id = 695051717977718785;
 
 DELETE FROM Original_tweets WHERE tweet_id > 691363834263633921;
 
@@ -45,3 +49,14 @@ delete from Image_sizes;
 
 ALTER TABLE Original_tweets
 	ADD COLUMN image_hash CHAR(36) AFTER created_ts;
+
+SELECT tweet_id FROM Original_tweets
+	WHERE image_hash = 'testhash';
+    
+DELETE FROM Duplicate_images;
+
+SELECT * FROM Duplicate_images;
+
+DELETE FROM Crowdflower where image_id = 694550623;
+
+select count(*) from crowdflower;

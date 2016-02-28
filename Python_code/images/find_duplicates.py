@@ -17,10 +17,14 @@ from PIL import Image
 import math
 import pandas as pd
 import time
+import platform
 
-
-IMAGE_PATH = '/Volumes/NeuralNet/images/'
-DUPE_IMAGE_PATH = '/Volumes/NeuralNet/dupe_images/'
+if platform.platform[:5] == 'Linux':
+    IMAGE_PATH = '/home/ec2-user/images/'
+    DUPE_IMAGE_PATH = '/home/ec2-user/dupe_images'
+else:
+    IMAGE_PATH = '/Volumes/NeuralNet/images/'
+    DUPE_IMAGE_PATH = '/Volumes/NeuralNet/dupe_images/'
 # IMAGE_PATH = '/Volumes/NeuralNet/test_images/'
 MAX_DIFF = 3
 

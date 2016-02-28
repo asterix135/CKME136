@@ -6,15 +6,31 @@ Logistics Regression Analysis of image data
 
 from Python_code.classifiers.preprocessing import img_preprocess as prep
 from sklearn.decomposition import RandomizedPCA
-from sklearn.linear_model import logistic
-import numpy as np
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+from sklearn.cross_validation import train_test_split
 import pandas as pd
 import time
 
+prep.SIZE = (250, 250)
 data, labels = prep.get_data(500)
 
 # split test & train sets
-np.random.seed(2322016)
-is_train = np.random.uniform(0, 1, len(data)) <= 0.7
-train_x, train_y = data[is_train], labels[is_train]
-test_x, test_y = data[is_train==False], labels[is_train==False]
+train_x, test_x, train_y, test_y = train_test_split(
+    data, labels, test_size=0.3, random_state=2722016)
+
+start_time = time.time()
+
+pca = RandomizedPCA(n_components=100000)
+train_x = pca.fit_transform(train_x)
+test_x = pca.transform(test_x)
+
+print('starting logit')
+
+model = LogisticRegression(multi_class='multinomial', solver='lbfgs')
+model.fit(train_x, train_y)
+pred_y = model.predict(test_x)
+print(pd.crosstab(test_y, pred_y, rownames=['Actual'],
+                  colnames=['Predicted']))
+print('\nAccuracy: ' + str(accuracy_score(test_y, pred_y)))
+print('\nprocessing time: ' + str(time.time() - start_time))

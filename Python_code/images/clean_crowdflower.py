@@ -6,8 +6,12 @@ from Python_code import sql_connect as mysql
 from Python_code.images import find_duplicates as dupes
 from PIL import Image
 import os
+import platform
 
-FILE_PATH = '/Volumes/NeuralNet/crowdflower_images/'
+if platform.platform[:5] == 'Linux':
+    FILE_PATH = '/home/ec2-user/crowdflower_images/'
+else:
+    FILE_PATH = '/Volumes/NeuralNet/crowdflower_images/'
 missing_image = Image.open(FILE_PATH + '694552455.jpg')
 missing_hash = dupes.calculate_image_hash(missing_image)
 

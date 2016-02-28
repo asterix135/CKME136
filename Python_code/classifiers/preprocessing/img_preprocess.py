@@ -8,11 +8,15 @@ from sklearn.decomposition import RandomizedPCA
 import matplotlib.pyplot as plt
 import pandas as pd
 from Python_code import sql_connect as mysql
+import platform
 
 
 SIZE = (400, 400)
-TESTING = True
-IMAGE_DIR = '/Volumes/NeuralNet/images/'
+TESTING = False
+if platform.platform[:5] == 'Linux':
+    IMAGE_DIR = '/home/ec2-user/images/'
+else:
+    IMAGE_DIR = '/Volumes/NeuralNet/images/'
 
 
 def img_to_flat_matrix(filename):
@@ -26,11 +30,12 @@ def img_to_flat_matrix(filename):
         img = img.resize(SIZE, Image.ANTIALIAS)
     img = np.array(img.getdata())
     if len(img.shape) == 1:
-        img_size = img.shape[0]
+        img = img.convert('RGB')
+        # img_size = img.shape[0]
+        # print('bad image file')
         print(filename)
-        return None
-    else:
-        img_size = img.shape[0] * img.shape[1]
+        # return None
+    img_size = img.shape[0] * img.shape[1]
     img_wide = img.reshape(1, img_size)
     return img_wide[0]
 
@@ -55,7 +60,32 @@ def visualize_data(data, labels):
     # plt.savefig('PCA_plot.png')
 
 
-def get_data(class_count=5000):
+def get_crowdflower(class_count = 1000,
+                    image_path='/Volumes/NeuralNet/crowdflower_images/'):
+    data = []
+    connection = mysql.connect()
+    with connection.cursor() as cursor:
+        sql = '(SELECT image_id, sentiment FROM Crowdflower ' \
+              'WHERE unclear_sentiment = 0 AND SENTIMENT = 1 ' \
+              'LIMIT ' + str(class_count) + ') ' \
+              'UNION ALL ' \
+              '(SELECT image_id, sentiment FROM Crowdflower ' \
+              'WHERE unclear_sentiment = 0 AND SENTIMENT = -1 ' \
+              'LIMIT ' + str(class_count) + ') '
+        cursor.execute(sql)
+        results = pd.DataFrame(cursor.fetchall())
+    connection.close()
+
+    for image in results['image_id']:
+        image = image_path + str(image) + '.jpg'
+        img = img_to_flat_matrix(image)
+        data.append(img)
+    data = np.array(data)
+    return data, np.array(results['sentiment'])
+
+
+
+def get_data(class_count=1000, image_path=IMAGE_DIR):
     """
     put data into Numpy array
     put category data into list
@@ -82,7 +112,7 @@ def get_data(class_count=5000):
     connection.close()
 
     for image in results['tweet_id']:
-        image = IMAGE_DIR + str(image) + '.jpg'
+        image = image_path + str(image) + '.jpg'
         img = img_to_flat_matrix(image)
         data.append(img)
     data = np.array(data)
@@ -122,10 +152,15 @@ def main(visualize=True):
     if TESTING:
         data, labels = test()
     else:
-        data, labels = get_data(100)
+        # data, labels = get_data(100)
+        data, labels = get_crowdflower()
+        print(len(data))
+        print(len(labels))
+        print(data)
+        print(labels)
     if visualize:
         visualize_data(data, labels)
 
 
 if __name__ == '__main__':
-    main()
+    main(False)

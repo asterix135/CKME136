@@ -11,30 +11,56 @@ import numpy as np
 import pandas as pd
 import time
 
+start_time = time.time()
+prep.SIZE = (300,300)
+# data, labels = prep.get_data(2000)
+cf_data, cf_labels = prep.get_crowdflower(2000)
+print('load time: ' + str(time.time() - start_time))
 
-data, labels = prep.get_data(1000)
 
 # split test & train sets
-np.random.seed(2222016)
-is_train = np.random.uniform(0, 1, len(data)) <= 0.7
-train_x, train_y = data[is_train], labels[is_train]
-test_x, test_y = data[is_train==False], labels[is_train==False]
+# np.random.seed(2222016)
+# is_train = np.random.uniform(0, 1, len(data)) <= 0.7
+# train_x, train_y = data[is_train], labels[is_train]
+# test_x, test_y = data[is_train==False], labels[is_train==False]
 
-start_time = time.time()
+np.random.seed(2252016)
+cf_is_train = np.random.uniform(0, 1, len(cf_data)) <= 0.7
+cf_train_x, cf_train_y = cf_data[cf_is_train], cf_labels[cf_is_train]
+cf_test_x, cf_test_y = cf_data[cf_is_train==False], \
+                       cf_labels[cf_is_train==False]
+
 # pca = RandomizedPCA(n_components=100)
 # train_x = pca.fit_transform(train_x)
 # test_x = pca.transform(test_x)
 
+print('starting knn')
 
-knn = KNeighborsClassifier()
-knn.fit(train_x, train_y)
+def run_knn(trainx, trainy, testx, testy):
+    knn = KNeighborsClassifier()
+    knn.fit(trainx, trainy)
+    print(pd.crosstab(testy, knn.predict(testx), rownames=['Actual'],
+                      colnames=['Predicted']))
 
-print('processing time: ' + str(time.time() - start_time))
+start_time = time.time()
+print('\nKNN on Twitter images')
+# run_knn(train_x, train_y, test_x, test_y)
+print('\nprocessing time: ' + str(time.time() - start_time))
 
-print(pd.crosstab(test_y, knn.predict(test_x), rownames=['Actual'],
-            colnames=['Predicted']))
+# Test crowdflower against itself
+start_time = time.time()
+print('\n\nKNN on Crowdflower images')
+run_knn(cf_train_x, cf_train_y, cf_test_x, cf_test_y)
+print('\nprocessing time: ' + str(time.time() - start_time))
 
-# TODO: Test against crowdflower data
+# Test Twitter data against Crossflower
+start_time = time.time()
+print('\n\nKNN: Predictions on Crowdflower from Twitter Images')
+# run_knn(data, labels, cf_data, cf_labels)
+# print('\nprocessing time: ' + str(time.time() - start_time))
 
-
-
+# Test Crowdflower data against Twitter
+start_time = time.time()
+print('\nKNN: Predictions on Crowdflower from Twitter Images')
+# run_knn(cf_data, cf_labels, data, labels)
+print('\nprocessing time: ' + str(time.time() - start_time))

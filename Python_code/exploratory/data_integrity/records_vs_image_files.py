@@ -4,6 +4,7 @@ Check for orphaned records in database or orphaned image files
 
 from Python_code import sql_connect as mysql
 import os
+import platform
 
 
 connection = mysql.connect()
@@ -16,8 +17,14 @@ with connection.cursor() as cursor:
     dupe_tweets = [x['tweet_id'] for x in cursor.fetchall()]
 connection.close()
 
-image_list = os.listdir('/Volumes/NeuralNet/images')
-dupe_images = os.listdir('/Volumes/NeuralNet/dupe_images')
+if platform.platform[:5] == 'Linux':
+    IMAGE_DIR = '/home/ec2-user/images/'
+    DUPE_DIR = '/home/ec2-user/dupe_images/'
+else:
+    IMAGE_DIR = '/Volumes/NeuralNet/images/'
+    DUPE_DIR = '/Volumes/NeuralNet/dupe_images/'
+image_list = os.listdir(IMAGE_DIR)
+dupe_images = os.listdir(DUPE_DIR)
 
 bad_db1 = 0
 bad_db2 = 0

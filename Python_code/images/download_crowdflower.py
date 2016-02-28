@@ -8,9 +8,12 @@ import pandas as pd
 from PIL import Image
 from io import BytesIO
 import requests
+import platform
 
-
-FILE_PATH = '/Volumes/NeuralNet/crowdflower_images/'
+if platform.platform[:5] == 'Linux':
+    FILE_PATH = '/home/ec2-user/crowdflower_images/'
+else:
+    IMAGE_DIR = '/Volumes/NeuralNet/crowdflower_images/'
 
 def download_image(url, image_id):
     response = requests.get(url)

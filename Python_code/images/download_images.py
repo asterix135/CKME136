@@ -11,8 +11,12 @@ from Python_code import sql_connect as mysql
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+import platform
 
-PATH = '/Volumes/NeuralNet/images/'
+if platform.platform[:5] == 'Linux':
+    PATH = '/home/ec2-user/images/'
+else:
+    PATH = '/Volumes/NeuralNet/images/'
 # PATH = ''
 TESTING = False
 
