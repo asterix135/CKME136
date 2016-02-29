@@ -7,6 +7,7 @@ KNN Analysis of image data
 from Python_code.classifiers.preprocessing import img_preprocess as prep
 from sklearn.decomposition import RandomizedPCA
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
 import numpy as np
 import pandas as pd
 import time
@@ -30,17 +31,19 @@ cf_train_x, cf_train_y = cf_data[cf_is_train], cf_labels[cf_is_train]
 cf_test_x, cf_test_y = cf_data[cf_is_train==False], \
                        cf_labels[cf_is_train==False]
 
-# pca = RandomizedPCA(n_components=100)
+# pca = RandomizedPCA(n_components=100, whiten=False)
 # train_x = pca.fit_transform(train_x)
 # test_x = pca.transform(test_x)
 
 print('starting knn')
 
 def run_knn(trainx, trainy, testx, testy):
-    knn = KNeighborsClassifier()
+    knn = KNeighborsClassifier(n_neighbors=5)
     knn.fit(trainx, trainy)
-    print(pd.crosstab(testy, knn.predict(testx), rownames=['Actual'],
+    pred_y = knn.predict(testx)
+    print(pd.crosstab(testy, pred_y, rownames=['Actual'],
                       colnames=['Predicted']))
+    print('\nAccuracy: ' + str(accuracy_score(testy, pred_y)))
 
 start_time = time.time()
 print('\nKNN on Twitter images')

@@ -17,7 +17,7 @@ with connection.cursor() as cursor:
     dupe_tweets = [x['tweet_id'] for x in cursor.fetchall()]
 connection.close()
 
-if platform.platform[:5] == 'Linux':
+if platform.platform()[:5] == 'Linux':
     IMAGE_DIR = '/home/ec2-user/images/'
     DUPE_DIR = '/home/ec2-user/dupe_images/'
 else:

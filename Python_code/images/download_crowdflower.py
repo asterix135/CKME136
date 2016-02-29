@@ -10,7 +10,7 @@ from io import BytesIO
 import requests
 import platform
 
-if platform.platform[:5] == 'Linux':
+if platform.platform()[:5] == 'Linux':
     FILE_PATH = '/home/ec2-user/crowdflower_images/'
 else:
     IMAGE_DIR = '/Volumes/NeuralNet/crowdflower_images/'

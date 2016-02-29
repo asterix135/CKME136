@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import os
 import platform
 
-if platform.platform[:5] == 'Linux':
+if platform.platform()[:5] == 'Linux':
     PATH = '/home/ec2-user/images/'
 else:
     PATH = '/Volumes/NeuralNet/images/'

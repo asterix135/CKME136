@@ -19,7 +19,7 @@ import pandas as pd
 import time
 import platform
 
-if platform.platform[:5] == 'Linux':
+if platform.platform()[:5] == 'Linux':
     IMAGE_PATH = '/home/ec2-user/images/'
     DUPE_IMAGE_PATH = '/home/ec2-user/dupe_images'
 else:

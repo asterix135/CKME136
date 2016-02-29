@@ -8,7 +8,7 @@ from PIL import Image
 import os
 import platform
 
-if platform.platform[:5] == 'Linux':
+if platform.platform()[:5] == 'Linux':
     FILE_PATH = '/home/ec2-user/crowdflower_images/'
 else:
     FILE_PATH = '/Volumes/NeuralNet/crowdflower_images/'

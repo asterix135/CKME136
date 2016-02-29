@@ -21,7 +21,7 @@ train_x, test_x, train_y, test_y = train_test_split(
 
 start_time = time.time()
 
-pca = RandomizedPCA(n_components=100000)
+pca = RandomizedPCA(n_components=1000, whiten=False)
 train_x = pca.fit_transform(train_x)
 test_x = pca.transform(test_x)
 

@@ -2,7 +2,7 @@ from PIL import Image
 import os
 import platform
 
-if platform.platform[:5] == 'Linux':
+if platform.platform()[:5] == 'Linux':
     IMAGE_DIR = '/home/ec2-user/images/'
 else:
     IMAGE_DIR = '/Volumes/NeuralNet/images/'

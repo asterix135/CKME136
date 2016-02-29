@@ -1,5 +1,5 @@
 """
-Support Vector Machine Classifier of image data
+Random Classifier of image data
 
 2 tests - against twitter data and against polarity list
 """
@@ -10,8 +10,8 @@ from sklearn.metrics import accuracy_score
 from sklearn.cross_validation import train_test_split
 import pandas as pd
 import time
-from sklearn.grid_search import GridSearchCV
-from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
+
 
 prep.SIZE = (250, 250)
 data, labels = prep.get_data(500)
@@ -24,13 +24,12 @@ pca = RandomizedPCA(n_components=100, whiten=False)
 train_x = pca.fit_transform(train_x)
 test_x = pca.transform(test_x)
 
-print('starting svm')
+print('starting rf')
 
 start_time = time.time()
 
-parameters = {'kernel':('linear', 'rbf'), 'C':[1, 10]}
 
-model = GridSearchCV(SVC(), parameters)
+model = RandomForestClassifier()
 model.fit(train_x, train_y)
 
 pred_y = model.predict(test_x)
