@@ -13,7 +13,7 @@ import time
 from sklearn.ensemble import RandomForestClassifier
 
 
-prep.SIZE = (250, 250)
+prep.SIZE = (100, 100)
 data, labels = prep.get_data(500)
 
 # split test & train sets
