@@ -1,7 +1,6 @@
 curwd <- getwd()
 setwd('..')
 source('Python_code/sql_vals.py')
-library(caret)
 library(RMySQL)
 library(jpeg)
 
@@ -17,7 +16,8 @@ img_to_flat_matrix <- function(filename) {
     if (length(dim(img)) == 2){
         return(NULL)
     }
-    return(img)
+    img_wide = as.matrix(img)
+    return(img_wide)
 }
 
 
