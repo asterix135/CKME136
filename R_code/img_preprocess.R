@@ -50,9 +50,9 @@ get_data <- function(class_count=500, image_path=IMAGE_DIR, size=SIZE) {
     dbDisconnect(con)
     
 
-    data = read.table('db_pull_500_each.txt', header=TRUE, 
-                      colClasses = c("character", 'numeric'),
-                      stringsAsFactors = FALSE)  
+    # data = read.table('db_pull_500_each.txt', header=TRUE, 
+                      # colClasses = c("character", 'numeric'),
+                      # stringsAsFactors = FALSE)  
     # initialize y-value vector
     y_vals <- rep(c(0,1,-1), each=class_count)
     yval_keep <- rep(TRUE, class_count*3)
@@ -90,6 +90,6 @@ get_data <- function(class_count=500, image_path=IMAGE_DIR, size=SIZE) {
 
 x_and_y <- get_data(class_count=25)
 test_x <- x_and_y[[1]]; test_y <- x_and_y[[2]]
-train_x <- x_and_y[[3]]; test_y <- x_and_y[[4]]
+train_x <- x_and_y[[3]]; train_y <- x_and_y[[4]]
 
 setwd(curwd)

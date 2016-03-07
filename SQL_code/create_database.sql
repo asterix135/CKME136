@@ -2,7 +2,7 @@ CREATE DATABASE TwitterImages;
 use TwitterImages;
 
 CREATE TABLE Original_tweets(
-	tweet_id BIGINT PRIMARY KEY,
+	tweet_id CHAR(20) PRIMARY KEY,
 	username VARCHAR(255),
     text VARCHAR(255),
     processed_text VARCHAR(255),
@@ -17,7 +17,7 @@ CREATE TABLE Image_sizes (
 	width INT,
     height INT,
     pixels INT,
-    tweet_id BIGINT PRIMARY KEY,
+    tweet_id CHAR(20) PRIMARY KEY,
     CONSTRAINT Tweet_ref FOREIGN KEY (tweet_id)
 		REFERENCES Original_tweets (tweet_id)
         ON DELETE CASCADE
@@ -25,8 +25,8 @@ CREATE TABLE Image_sizes (
 );
 
 CREATE TABLE Duplicate_images(
-	tweet_id BIGINT PRIMARY KEY,
-    primary_tweet BIGINT,
+	tweet_id CHAR(20) PRIMARY KEY,
+    primary_tweet CHAR(20),
     username VARCHAR(255),
     text VARCHAR(255),
     processed_text VARCHAR(255),
