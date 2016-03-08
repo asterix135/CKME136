@@ -8,7 +8,7 @@ fitControl <- trainControl( ## 10-fold CV
     repeats = 10,
     savePredictions = TRUE)
 
-fit <- train(train_y ~ train_x, method='dnn', trControl = fitControl)
+fit <- train(x=train_x, y=train_y, method='dnn')
 pred_y <- predict(fit, test_x)
 
 cm <- confusionMatrix(pred_y, test_y)

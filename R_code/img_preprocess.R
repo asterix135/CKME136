@@ -54,7 +54,7 @@ get_data <- function(class_count=500, image_path=IMAGE_DIR, size=SIZE) {
                       # colClasses = c("character", 'numeric'),
                       # stringsAsFactors = FALSE)  
     # initialize y-value vector
-    y_vals <- rep(c(0,1,-1), each=class_count)
+    y_vals <- as.factor(rep(c(0,1,-1), each=class_count))
     yval_keep <- rep(TRUE, class_count*3)
     
     # initialize matrix for x-values
@@ -80,15 +80,15 @@ get_data <- function(class_count=500, image_path=IMAGE_DIR, size=SIZE) {
     test_y <- y_vals[-train_idx]
     train_y <- y_vals[train_idx]
     
-    preObj <- preProcess(train_x, method=c('pca'), 
-                         pcaComp=100)
-    test_x <- predict(preObj, test_x)
-    train_x <- predict(preObj, train_x)
+    # preObj <- preProcess(train_x, method=c('pca'), 
+                         # pcaComp=100)
+    # test_x <- predict(preObj, test_x)
+    # train_x <- predict(preObj, train_x)
     
     return (list(test_x, test_y, train_x, train_y))
 }
 
-x_and_y <- get_data(class_count=25)
+x_and_y <- get_data(class_count=500)
 test_x <- x_and_y[[1]]; test_y <- x_and_y[[2]]
 train_x <- x_and_y[[3]]; train_y <- x_and_y[[4]]
 
