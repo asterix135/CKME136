@@ -29,7 +29,7 @@ X_test_pca = pca.transform(X_test)
 clf = svm.SVC(C=5., gamma=0.001)
 clf.fit(X_train_pca, y_train)
 
-print 'Score on unseen data: '
-print clf.score(X_test_pca, y_test)
+print('Score on unseen data: ')
+print(clf.score(X_test_pca, y_test))
 
 
