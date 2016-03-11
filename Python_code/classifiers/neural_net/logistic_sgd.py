@@ -1,10 +1,8 @@
 """
 Multi-layer perceptron implementation
 http://deeplearning.net/tutorial/logreg.html
-http://deeplearning.net/tutorial/mlp.html
-http://deeplearning.net/tutorial/lenet.html
 """
-__docformat__ = 'reconstructedtext en'
+__docformat__ = 'restructedtext en'
 
 from Python_code.classifiers.preprocessing import img_preprocess as prep
 from sklearn.cross_validation import train_test_split
