@@ -22,7 +22,7 @@ from Python_code.classifiers.preprocessing import img_preprocess as prep
 # start-snippet-1
 class HiddenLayer(object):
 
-    def __init__(self, rng, iput, n_in, n_out, W=None, b=None,
+    def __init__(self, rng, input, n_in, n_out, W=None, b=None,
                  activation=T.tanh):
         """
         Typical hidden layer of a MLP: units are fully-connected and have
@@ -168,7 +168,7 @@ class MLP:
             self.logRegressionLayer.negative_log_likelihood
         )
         # same holds for the function computing the number of errors
-        self.error = self.logRegressionLayer.errors
+        self.errors = self.logRegressionLayer.errors
 
         # the parameters of the model are the parameters of the two layers it
         # is made out of
@@ -237,15 +237,15 @@ def mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
     cost = (
         classifier.negative_log_likelihood(y)
         + L1_reg * classifier.L1
-        + L2_reg * classifier.L2.sqr
+        + L2_reg * classifier.L2_sqr
     )
     # end-snippet-4
 
     # compiling a Theano function that computes the mistakes that are made
     # by the model on a minibatch
     test_model = theano.function(
-        input=[index],
-        output=classifier.errors(y),
+        inputs=[index],
+        outputs=classifier.errors(y),
         givens={
             x: test_set_x[index * batch_size:(index + 1) * batch_size],
             y: test_set_y[index * batch_size:(index + 1) * batch_size]
