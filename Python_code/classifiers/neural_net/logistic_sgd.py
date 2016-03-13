@@ -136,7 +136,9 @@ class LogisticRegression:
 
 
 def load_data(num_records=1750):
+    print('... loading data ...')
     data, labels = prep.get_data(num_records)
+    labels += 1
     train_x, test_x, train_y, test_y = train_test_split(
         data, labels, test_size=0.3, random_state=28022016
     )
@@ -144,7 +146,7 @@ def load_data(num_records=1750):
         train_x, train_y, test_size=0.3, random_state=10032016
     )
 
-    def shared_dataset(data_x, data_y, borrow=True):
+    def shared_dataset(data_xy, borrow=True):
         """ Function that loads the dataset into shared variables
 
         The reason we store our dataset in shared variables is to allow
@@ -152,15 +154,14 @@ def load_data(num_records=1750):
         Since copying data into the GPU is slow, copying a minibatch everytime
         is needed (the default behaviour if the data is not in a shared
         variable) would lead to a large decrease in performance.
-        :param data_x:
-        :param data_y:
-        :param borrow:
         """
+        data_x, data_y = data_xy
+
         shared_x = theano.shared(np.asarray(data_x,
-                                            dtype=theano.config.floatX),
+                                               dtype=theano.config.floatX),
                                  borrow=borrow)
         shared_y = theano.shared(np.asarray(data_y,
-                                            dtype=theano.config.floatX),
+                                               dtype=theano.config.floatX),
                                  borrow=borrow)
         # When storing data on the GPU it has to be stored as floats
         # therefore we will store the labels as ``floatX`` as well
@@ -171,17 +172,20 @@ def load_data(num_records=1750):
         # lets ous get around this issue
         return shared_x, T.cast(shared_y, 'int32')
 
-    test_x, test_y = shared_dataset(test_x, test_y)
-    valid_x, valid_y = shared_dataset(valid_x, valid_y)
-    train_x, train_y = shared_dataset(train_x, train_y)
+    test_x, test_y = shared_dataset((test_x, test_y))
+    valid_x, valid_y = shared_dataset((valid_x, valid_y))
+    train_x, train_y = shared_dataset((train_x, train_y))
 
     rval = [(train_x, train_y), (valid_x, valid_y), (test_x, test_y)]
     return rval
+
 
 def sgd_optimization(learning_rate=0.13, n_epochs=1000, batch_size=600):
     """
     Demonstrate stochastic gradient descent optimization of a log-linear
     model
+
+    This is demonstrated on MNIST.
 
     :type learning_rate: float
     :param learning_rate: learning rate used (factor for the stochastic
@@ -190,10 +194,11 @@ def sgd_optimization(learning_rate=0.13, n_epochs=1000, batch_size=600):
     :type n_epochs: int
     :param n_epochs: maximal number of epochs to run the optimizer
 
-    :param batch_size:
+    :param batch_size: size of batch
 
     """
     datasets = load_data()
+
     train_set_x, train_set_y = datasets[0]
     valid_set_x, valid_set_y = datasets[1]
     test_set_x, test_set_y = datasets[2]
@@ -211,17 +216,18 @@ def sgd_optimization(learning_rate=0.13, n_epochs=1000, batch_size=600):
     # allocate symbolic variables for the data
     index = T.lscalar()  # index to a [mini]batch
 
-    # generate symbolic variables for input (x and y represent a minibatch)
+    # generate symbolic variables for input (x and y represent a
+    # minibatch)
     x = T.matrix('x')  # data, presented as rasterized images
     y = T.ivector('y')  # labels, presented as 1D vector of [int] labels
 
-    # construct the logistics regression class
-    # default to size used in loading images *3 (for rgb)
+    # construct the logistic regression class
+    # Each MNIST image has size 28*28
     classifier = LogisticRegression(input=x,
                                     n_in=prep.SIZE[0] * prep.SIZE[1] * 3,
                                     n_out=3)
 
-    # the cost we minimize during the training is the negative log likelihood of
+    # the cost we minimize during training is the negative log likelihood of
     # the model in symbolic format
     cost = classifier.negative_log_likelihood(y)
 
@@ -255,9 +261,9 @@ def sgd_optimization(learning_rate=0.13, n_epochs=1000, batch_size=600):
     updates = [(classifier.W, classifier.W - learning_rate * g_W),
                (classifier.b, classifier.b - learning_rate * g_b)]
 
-    # compiling a Theano function 'train_model' that returns the cost, but in
+    # compiling a Theano function `train_model` that returns the cost, but in
     # the same time updates the parameter of the model based on the rules
-    # defined in 'updates'
+    # defined in `updates`
     train_model = theano.function(
         inputs=[index],
         outputs=cost,
@@ -274,24 +280,25 @@ def sgd_optimization(learning_rate=0.13, n_epochs=1000, batch_size=600):
     ###############
     print('... training the model')
     # early-stopping parameters
-    patience = 5000  # look at this many example regardless
-    patience_increase = 2  # wait this much longer when a new best is found
+    patience = 5000  # look as this many examples regardless
+    patience_increase = 2  # wait this much longer when a new best is
+                                  # found
     improvement_threshold = 0.995  # a relative improvement of this much is
-                                    # considered significant
+                                  # considered significant
     validation_frequency = min(n_train_batches, patience // 2)
-                                    # go through this many
-                                    # minibatches before checking the network
-                                    # on the validation set; in this case
-                                    # we check every epoch
+                                  # go through this many
+                                  # minibatche before checking the network
+                                  # on the validation set; in this case we
+                                  # check every epoch
 
     best_validation_loss = np.inf
-    test_score = 0
+    test_score = 0.
     start_time = timeit.default_timer()
 
     done_looping = False
     epoch = 0
     while (epoch < n_epochs) and (not done_looping):
-        epoch += 1
+        epoch = epoch + 1
         for minibatch_index in range(n_train_batches):
 
             minibatch_avg_cost = train_model(minibatch_index)
@@ -316,8 +323,8 @@ def sgd_optimization(learning_rate=0.13, n_epochs=1000, batch_size=600):
 
                 # if we got the best validation score until now
                 if this_validation_loss < best_validation_loss:
-                    # improve patience if loss improvement is good enough
-                    if this_validation_loss < best_validation_loss * \
+                    #improve patience if loss improvement is good enough
+                    if this_validation_loss < best_validation_loss *  \
                        improvement_threshold:
                         patience = max(patience, iter * patience_increase)
 
@@ -330,7 +337,7 @@ def sgd_optimization(learning_rate=0.13, n_epochs=1000, batch_size=600):
 
                     print(
                         (
-                            '   epoch %i, minibatch %i/%i, test error of'
+                            '     epoch %i, minibatch %i/%i, test error of'
                             ' best model %f %%'
                         ) %
                         (
@@ -341,13 +348,14 @@ def sgd_optimization(learning_rate=0.13, n_epochs=1000, batch_size=600):
                         )
                     )
 
-                    # save teh best model
+                    # save the best model
                     with open('best_model.pkl', 'wb') as f:
                         pickle.dump(classifier, f)
 
             if patience <= iter:
                 done_looping = True
                 break
+
     end_time = timeit.default_timer()
     print(
         (

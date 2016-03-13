@@ -26,6 +26,10 @@ Python_code/sql_vals.py
 
 # models
 nn_model.rda
+*.pkl
+
+# random test data
+mnist.pkl.gz
 
 
 ############################################
