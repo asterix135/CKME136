@@ -25,12 +25,12 @@ def img_to_flat_matrix(filename):
     :param filename: including path
     :return: 1D Numpy array of RGB data
     """
-    img = Image.open(filename)
+    img = Image.open(filename).convert('RGB')
     if img.size != SIZE:
         img = img.resize(SIZE, Image.ANTIALIAS)
     img = np.array(img.getdata())
     if len(img.shape) == 1:
-        img = img.convert('RGB')
+        img = np.array(Image.fromarray(img).convert('RGB').getdata())
         # img_size = img.shape[0]
         # print('bad image file')
         print(filename)
@@ -43,15 +43,14 @@ def img_to_flat_matrix(filename):
 def visualize_data(data, labels):
     pca = RandomizedPCA(n_components=2)
     reshaped = pca.fit_transform(data)
-    text_labels = 0
-    df = pd.DataFrame({'x': reshaped[:,0], 'y': reshaped[:,1],
-                       'label': np.where(labels==1, 'Positive',
-                                         np.where(labels==0, 'Neutral',
+    df = pd.DataFrame({'x': reshaped[:,0], 'y': reshaped[:, 1],
+                       'label': np.where(labels == 1, 'Positive',
+                                         np.where(labels == 0, 'Neutral',
                                                   'Negative'))})
     colors = ['yellow', 'red', 'blue']
     for label, color in zip(df['label'].unique(), colors):
         mask = df['label'] == label
-        plt.scatter(df[mask]['x'], df[mask]['y'], c=color, label = label)
+        plt.scatter(df[mask]['x'], df[mask]['y'], c=color, label=label)
     plt.legend()
     plt.title('PCA Decomposition of Image Data')
     plt.xlabel('PCA 1')
@@ -60,7 +59,7 @@ def visualize_data(data, labels):
     # plt.savefig('PCA_plot.png')
 
 
-def get_crowdflower(class_count = 1000,
+def get_crowdflower(class_count=1000,
                     image_path='/Volumes/NeuralNet/crowdflower_images/'):
     data = []
     connection = mysql.connect()
@@ -84,31 +83,61 @@ def get_crowdflower(class_count = 1000,
     return data, np.array(results['sentiment'])
 
 
-
-def get_data(class_count=1000, image_path=IMAGE_DIR):
+def get_data(class_count=1000, image_path=IMAGE_DIR, rand=True):
     """
     put data into Numpy array
     put category data into list
     requires Database pull
     returns equal number of examples per class
-    :return:
+    :param class_count: number of examples of each class to keep
+    :param image_path: location of image files
+    :param rand: Boolean whether to take random selection or just first 1st n
     """
     data = []
     connection = mysql.connect()
     with connection.cursor() as cursor:
-        sql = '(SELECT tweet_id, tweet_sentiment FROM Original_tweets ' \
-              'WHERE unclear_sentiment = 0 AND tweet_sentiment = 0 ' \
-              'LIMIT ' + str(class_count) + ') ' \
-              'UNION ALL ' \
-              '(SELECT tweet_id, tweet_sentiment FROM Original_tweets ' \
-              'WHERE unclear_sentiment = 0 AND tweet_sentiment = 1 ' \
-              'LIMIT ' + str(class_count) + ') ' \
-              'UNION ALL ' \
-              '(SELECT tweet_id, tweet_sentiment FROM Original_tweets ' \
-              'WHERE unclear_sentiment = 0 AND tweet_sentiment = -1 ' \
-              'LIMIT ' + str(class_count) + ')'
-        cursor.execute(sql)
-        results = pd.DataFrame(cursor.fetchall())
+        if rand:
+            sql = 'SELECT tweet_id, tweet_sentiment FROM Original_tweets ' \
+                  'WHERE unclear_sentiment = 0 AND tweet_sentiment = '
+
+            # Neutral sentiment
+            cursor.execute(sql + '0')
+            sub_results = pd.DataFrame(cursor.fetchall())
+            pct_keep = class_count / len(sub_results)
+            np.random.seed(3112016)
+            keep = np.random.uniform(0, 1, len(sub_results)) <= pct_keep
+            results = sub_results[keep]
+
+            # Positive sentiment
+            cursor.execute(sql + '1')
+            sub_results = pd.DataFrame(cursor.fetchall())
+            pct_keep = class_count / len(sub_results)
+            np.random.seed(11032016)
+            keep = np.random.uniform(0, 1, len(sub_results)) <= pct_keep
+            results = results.append(sub_results[keep])
+
+            # Negative sentiment
+            cursor.execute(sql + '-1')
+            sub_results = pd.DataFrame(cursor.fetchall())
+            pct_keep = class_count / len(sub_results)
+            np.random.seed(1132016)
+            keep = np.random.uniform(0, 1, len(sub_results)) <= pct_keep
+            results = results.append(sub_results[keep])
+
+        else:
+            sql = '(SELECT tweet_id, tweet_sentiment FROM Original_tweets ' \
+                  'WHERE unclear_sentiment = 0 AND tweet_sentiment = 0 ' \
+                  'LIMIT ' + str(class_count) + ') ' \
+                  'UNION ALL ' \
+                  '(SELECT tweet_id, tweet_sentiment FROM Original_tweets ' \
+                  'WHERE unclear_sentiment = 0 AND tweet_sentiment = 1 ' \
+                  'LIMIT ' + str(class_count) + ') ' \
+                  'UNION ALL ' \
+                  '(SELECT tweet_id, tweet_sentiment FROM Original_tweets ' \
+                  'WHERE unclear_sentiment = 0 AND tweet_sentiment = -1 ' \
+                  'LIMIT ' + str(class_count) + ')'
+            cursor.execute(sql)
+            results = pd.DataFrame(cursor.fetchall())
     connection.close()
 
     for image in results['tweet_id']:
@@ -117,7 +146,6 @@ def get_data(class_count=1000, image_path=IMAGE_DIR):
         data.append(img)
     data = np.array(data)
     return data, np.array(results['tweet_sentiment'])
-
 
 
 def test():

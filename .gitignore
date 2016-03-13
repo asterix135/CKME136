@@ -24,6 +24,9 @@ Class_Documents/
 Python_code/twitter_vals.py
 Python_code/sql_vals.py
 
+# models
+nn_model.rda
+
 
 ############################################
 # R Section

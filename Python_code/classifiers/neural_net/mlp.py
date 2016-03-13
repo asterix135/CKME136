@@ -13,13 +13,13 @@ import timeit
 import numpy as np
 import theano
 import theano.tensor as T
-from Python_code.classifiers.neural_net.logistic_sgd import LogisticRegression,
-                                                            load_data
+from Python_code.classifiers.neural_net.logistic_sgd import LogisticRegression, \
+    load_data
 # start-snippet-1
 class HiddenLayer(object):
 
     def __init__(self, rng, iput, n_in, n_out, W=None, b=None,
-                 activiation=T.tanh):
+                 activation=T.tanh):
         """
         Typical hidden layer of a MLP: units are fully-connected and have
         sigmoidal activation function. Weight matrix W is of shape (n_in,n_out)
