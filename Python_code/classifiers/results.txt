@@ -39,3 +39,28 @@ size=(250,250)
 RF
 n = 500
 size=(250,250)
+
+
+CNN:
+
+20 each
+NN: 270
+pred: 128
+             precision    recall  f1-score   support
+
+         -1       0.67      0.44      0.53         9
+          0       1.00      1.00      1.00         3
+          1       0.29      0.50      0.36         4
+
+avg / total       0.63      0.56      0.58        16
+
+
+Accuracy score
+==============
+0.5625
+
+Confusion Matrix
+================
+[[4 0 5]
+ [0 3 0]
+ [2 0 2]]

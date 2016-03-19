@@ -17,7 +17,7 @@ from theano.tensor.nnet import conv2d
 from Python_code.classifiers.neural_net.logistic_sgd import load_data, \
     LogisticRegression
 from Python_code.classifiers.neural_net.mlp import HiddenLayer
-from Python_code.classifiers.preprocessing import img_preprocess as prep
+from Python_code.classifiers.preprocessing import nn_preprocess as prep
 
 
 class LeNetConvPoolLayer(object):
