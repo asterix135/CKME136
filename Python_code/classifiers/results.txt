@@ -43,9 +43,15 @@ size=(250,250)
 
 CNN:
 
-20 each
-NN: 270
-pred: 128
+Timing:
+N   TT  PT
+10  165
+20  270     128
+40  657     281
+100 3968    1933
+250 4052
+
+n=20
              precision    recall  f1-score   support
 
          -1       0.67      0.44      0.53         9
@@ -64,3 +70,126 @@ Confusion Matrix
 [[4 0 5]
  [0 3 0]
  [2 0 2]]
+
+
+/Library/Frameworks/Python.framework/Versions/3.5/bin/python3.5 /Users/christophergraham/Documents/School/Ryerson_program/CKME136/Python_code/classifiers/neural_net/nn_theano_v3.py
+loading data....
+100 examples per category
+Total data load time:
+---------------------
+23.963279008865356
+
+starting nn....
+Total transform time:
+---------------------
+3968.191596031189
+
+starting predictions....
+total prediction time
+---------------------
+1933.841835975647
+
+             precision    recall  f1-score   support
+
+         -1       0.32      0.39      0.35        31
+          0       0.49      0.53      0.51        32
+          1       0.48      0.33      0.39        33
+
+avg / total       0.43      0.42      0.42        96
+
+
+Accuracy score
+==============
+0.416666666667
+
+Confusion Matrix
+================
+[[12 10  9]
+ [12 17  3]
+ [14  8 11]]
+/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/site-packages/matplotlib/tight_layout.py:222: UserWarning: tight_layout : falling back to Agg renderer
+  warnings.warn("tight_layout : falling back to Agg renderer")
+
+  /Library/Frameworks/Python.framework/Versions/3.5/bin/python3.5 /Users/christophergraham/Documents/School/Ryerson_program/CKME136/Python_code/classifiers/neural_net/nn_theano_v3.py
+loading data....
+1000 examples per category
+Total data load time:
+---------------------
+241.47923398017883
+
+starting nn....
+Total transform time:
+---------------------
+15321.21269106865
+
+starting predictions....
+total prediction time
+---------------------
+6525.552937030792
+
+             precision    recall  f1-score   support
+
+         -1       0.35      0.39      0.37       290
+          0       0.43      0.38      0.40       328
+          1       0.30      0.31      0.30       283
+
+avg / total       0.36      0.36      0.36       901
+
+
+Accuracy score
+==============
+0.360710321865
+
+Confusion Matrix
+================
+[[114  83  93]
+ [ 94 124 110]
+ [116  80  87]]
+/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/site-packages/matplotlib/tight_layout.py:222: UserWarning: tight_layout : falling back to Agg renderer
+  warnings.warn("tight_layout : falling back to Agg renderer")
+sh: -c: line 0: unexpected EOF while looking for matching `"'
+sh: -c: line 1: syntax error: unexpected end of file
+
+Process finished with exit code 0
+
+/Library/Frameworks/Python.framework/Versions/3.5/bin/python3.5 /Users/christophergraham/Documents/School/Ryerson_program/CKME136/Python_code/classifiers/neural_net/nn_theano_v3.py
+loading data....
+250 examples per category
+Total data load time:
+---------------------
+56.03823399543762
+
+starting nn....
+Total transform time:
+---------------------
+4052.6806819438934
+
+starting predictions....
+total prediction time
+/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/site-packages/matplotlib/tight_layout.py:222: UserWarning: tight_layout : falling back to Agg renderer
+---------------------
+  warnings.warn("tight_layout : falling back to Agg renderer")
+1794.8686380386353
+
+             precision    recall  f1-score   support
+
+         -1       0.26      0.34      0.29        67
+          0       0.43      0.38      0.40        93
+          1       0.42      0.36      0.39        77
+
+avg / total       0.38      0.36      0.37       237
+
+
+Accuracy score
+==============
+0.362869198312
+
+Confusion Matrix
+================
+[[23 28 16]
+ [35 35 23]
+ [31 18 28]]
+sh: -c: line 0: unexpected EOF while looking for matching `"'
+sh: -c: line 1: syntax error: unexpected end of file
+
+Process finished with exit code 0

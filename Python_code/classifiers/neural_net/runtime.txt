@@ -1,0 +1,23 @@
+Timing:
+                        --------------Logistic Regression------------
+                        layer -4    layer -3    layer -2    layer -1
+N       TT      PT      Accuracy    Accuracy    Accuracy    Accuracy
+10      165
+20      270     128
+40      657     281
+100     3968    1933                0.41
+250     4052    1794    0.35        0.36        0.42        0.42
+1000    15321   6525                0.36
+
+
+N       TT      PT      ---------------SVC---------------------------
+250     4421                        0.35                    0.29
+
+
+N       TT      PT      ---------------RF----------------------------
+250     4041    1759                0.36                    0.32
+
+
+Crowdflower NN with Logistic
+@ 375
+0.72

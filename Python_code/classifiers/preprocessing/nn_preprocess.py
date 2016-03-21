@@ -72,7 +72,7 @@ def get_crowdflower(class_count=1000,
         image = image_path + str(image) + '.jpg'
         img = img_to_3d_matrix(image, size)
         data.append(img)
-    data = np.array(data)
+    data = np.stack(data)
     return data, np.array(results['sentiment'])
 
 
@@ -165,7 +165,7 @@ def test():
                   691363867788759040]
     for image in image_list:
         image = IMAGE_DIR + str(image) + '.jpg'
-        img = img_to_flat_matrix(image)
+        img = img_to_3d_matrix(image, (231, 231))
         data.append(img)
     data = np.array(data)
 
