@@ -19,30 +19,25 @@ else:
     IMAGE_DIR = '/Volumes/NeuralNet/images/'
 
 
-def img_to_3d_matrix(filename):
+def img_to_flat_matrix(filename):
     """
     Loads image, resizes if necessary, and turns into a 1D Numpy array
     :param filename: including path
     :return: 1D Numpy array of RGB data
     """
     img = Image.open(filename).convert('RGB')
-    if img.size != size:
-        img = img.resize(size, Image.ANTIALIAS)
-    img = np.array(img.getdata()).reshape(size[0], size[1], 3)
-    return img
-    # img = Image.open(filename).convert('RGB')
-    # if img.size != SIZE:
-    #     img = img.resize(SIZE, Image.ANTIALIAS)
-    # img = np.array(img.getdata())
-    # if len(img.shape) == 1:
-    #     img = np.array(Image.fromarray(img).convert('RGB').getdata())
-    #     # img_size = img.shape[0]
-    #     # print('bad image file')
-    #     print(filename)
-    #     # return None
-    # img_size = img.shape[0] * img.shape[1]
-    # img_wide = img.reshape(1, img_size)
-    # return img_wide[0]
+    if img.size != SIZE:
+        img = img.resize(SIZE, Image.ANTIALIAS)
+    img = np.array(img.getdata())
+    if len(img.shape) == 1:
+        img = np.array(Image.fromarray(img).convert('RGB').getdata())
+        # img_size = img.shape[0]
+        # print('bad image file')
+        print(filename)
+        # return None
+    img_size = img.shape[0] * img.shape[1]
+    img_wide = img.reshape(1, img_size)
+    return img_wide[0]
 
 
 def visualize_data(data, labels):
@@ -82,7 +77,7 @@ def get_crowdflower(class_count=1000,
 
     for image in results['image_id']:
         image = image_path + str(image) + '.jpg'
-        img = img_to_3d_matrix(image)
+        img = img_to_flat_matrix(image)
         data.append(img)
     data = np.array(data)
     return data, np.array(results['sentiment'])
@@ -147,7 +142,7 @@ def get_data(class_count=1000, image_path=IMAGE_DIR, rand=True):
 
     for image in results['tweet_id']:
         image = image_path + str(image) + '.jpg'
-        img = img_to_3d_matrix(image)
+        img = img_to_flat_matrix(image)
         data.append(img)
     data = np.array(data)
     return data, np.array(results['tweet_sentiment'])
@@ -174,7 +169,7 @@ def test():
                   691363867788759040]
     for image in image_list:
         image = IMAGE_DIR + str(image) + '.jpg'
-        img = img_to_3d_matrix(image)
+        img = img_to_flat_matrix(image)
         data.append(img)
     data = np.array(data)
 

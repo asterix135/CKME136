@@ -13,16 +13,16 @@ import time
 from sklearn.ensemble import RandomForestClassifier
 
 
-prep.SIZE = (100, 100)
-data, labels = prep.get_data(500)
+prep.SIZE = (231, 231)
+data, labels = prep.get_data(250)
 
 # split test & train sets
 train_x, test_x, train_y, test_y = train_test_split(
     data, labels, test_size=0.3, random_state=28022016)
 
-pca = RandomizedPCA(n_components=100, whiten=False)
-train_x = pca.fit_transform(train_x)
-test_x = pca.transform(test_x)
+# pca = RandomizedPCA(n_components=100, whiten=False)
+# train_x = pca.fit_transform(train_x)
+# test_x = pca.transform(test_x)
 
 print('starting rf')
 

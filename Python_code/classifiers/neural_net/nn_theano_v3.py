@@ -28,12 +28,13 @@ def plot_confusion_matrix(cm, title='Confusion matrix', cmap=plt.cm.Blues):
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
 
-NUM_PER_CATEGORY = 375
+NUM_PER_CATEGORY = 3000
 
 print('loading data....')
 print(str(NUM_PER_CATEGORY) + ' examples per category')
 start_time = time.time()
-images, labels = prep.get_crowdflower(NUM_PER_CATEGORY)
+# images, labels = prep.get_crowdflower(NUM_PER_CATEGORY)
+images, labels = prep.get_data(NUM_PER_CATEGORY)
 images = images.astype('float32')
 train_x, test_x, train_y, test_y = train_test_split(
     images, labels, train_size=.7, random_state=20160319)
@@ -45,7 +46,7 @@ os.system('say "data is loaded"')
 
 
 # Consider trying different values for output_layers
-print('\nstarting nn on crowdflower with logit @ -2....')
+print('\nstarting nn on twitter with logit @ -2....')
 tf = OverfeatTransformer(output_layers=[-2])
 clf = LogisticRegression()
 # clf = SVC()
@@ -85,6 +86,31 @@ print(cm)
 # plt.figure()
 # plot_confusion_matrix(cm)
 #
-# plt.show()
+##  plt.show()
+
+
+print('\nCalculating predictions on Crowdflower')
+print('--------------------------------------')
+
+cf_x, cf_y = prep.get_crowdflower(1000)
+pred_cf = pipe.predict(cf_x)
+
+print()
+
+print(classification_report(cf_y, pred_cf))
+print()
+
+print("Accuracy score")
+print("==============")
+print(accuracy_score(cf_y, pred_cf))
+print()
+
+print('Confusion Matrix')
+print('================')
+cm = confusion_matrix(cf_y, pred_cf)
+print(cm)
+
+
+
 os.system('say "your program has finished"')
 

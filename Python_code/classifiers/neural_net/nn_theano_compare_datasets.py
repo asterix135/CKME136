@@ -28,15 +28,15 @@ def plot_confusion_matrix(cm, title='Confusion matrix', cmap=plt.cm.Blues):
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
 
-NUM_PER_CATEGORY = 375
+NUM_PER_CATEGORY = 1000
 
 print('loading data....')
 print(str(NUM_PER_CATEGORY) + ' examples per category')
 start_time = time.time()
-images, labels = prep.get_crowdflower(NUM_PER_CATEGORY)
-images = images.astype('float32')
-train_x, test_x, train_y, test_y = train_test_split(
-    images, labels, train_size=.7, random_state=20160319)
+train_x, train_y = prep.get_data(NUM_PER_CATEGORY)
+train_x = train_x.astype('float32')
+test_x, test_y = prep.get_crowdflower(NUM_PER_CATEGORY)
+test_x = test_x.astype('float32')
 print('Total data load time:')
 print('---------------------')
 print(time.time() - start_time)
@@ -45,7 +45,7 @@ os.system('say "data is loaded"')
 
 
 # Consider trying different values for output_layers
-print('\nstarting nn on crowdflower with logit @ -2....')
+print('\nstarting nn trained on twitter with logit @ -2....')
 tf = OverfeatTransformer(output_layers=[-2])
 clf = LogisticRegression()
 # clf = SVC()
@@ -57,15 +57,18 @@ print('Total transform time:')
 print('---------------------')
 print(time.time() - start_time)
 
-os.system('say "model is built"')
+os.system('say "first model is built"')
 
 
-print('\nstarting predictions....')
+print('\nstarting predictions on crowdflower....')
 start_time = time.time()
 pred_y = pipe.predict(test_x)
 print('total prediction time')
 print('---------------------')
 print(time.time() - start_time)
+
+print('\n Using Twitter to Predict Crowdflower')
+print('====================================')
 
 print()
 
@@ -81,6 +84,49 @@ print('Confusion Matrix')
 print('================')
 cm = confusion_matrix(test_y, pred_y)
 print(cm)
+
+
+print('\nStarting reverse predictions')
+os.system('say "starting to build second model"')
+
+tf = OverfeatTransformer(output_layers=[-2])
+clf = LogisticRegression()
+pipe = make_pipeline(tf, clf)
+start_time = time.time()
+pipe.fit(test_x, test_y)
+
+print('Total transform time:')
+print('---------------------')
+print(time.time() - start_time)
+
+os.system('say "second model is built"')
+
+print('\nstarting predictions on twitter....')
+start_time = time.time()
+pred_y = pipe.predict(train_x)
+print('total prediction time')
+print('---------------------')
+print(time.time() - start_time)
+
+print()
+
+print('\n Using Crowdflower to Predict Twitter')
+print('====================================')
+
+print()
+print(classification_report(train_y, pred_y))
+print()
+
+print("Accuracy score")
+print("==============")
+print(accuracy_score(train_y, pred_y))
+print()
+
+print('Confusion Matrix')
+print('================')
+cm = confusion_matrix(train_y, pred_y)
+print(cm)
+
 
 # plt.figure()
 # plot_confusion_matrix(cm)
