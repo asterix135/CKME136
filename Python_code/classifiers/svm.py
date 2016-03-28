@@ -15,7 +15,7 @@ from sklearn.svm import SVC
 
 APPLY_PCA = False
 prep.SIZE = (250, 250)
-data, labels = prep.get_data(500)
+data, labels = prep.get_data(1000)
 
 # split test & train sets
 train_x, test_x, train_y, test_y = train_test_split(

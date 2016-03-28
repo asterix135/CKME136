@@ -14,7 +14,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 
 prep.SIZE = (231, 231)
-data, labels = prep.get_data(250)
+data, labels = prep.get_data(3000)
 
 # split test & train sets
 train_x, test_x, train_y, test_y = train_test_split(

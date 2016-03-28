@@ -13,7 +13,7 @@ import pandas as pd
 import time
 
 prep.SIZE = (250, 250)
-data, labels = prep.get_data(500)
+data, labels = prep.get_data(3000)
 
 # split test & train sets
 train_x, test_x, train_y, test_y = train_test_split(

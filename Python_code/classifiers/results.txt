@@ -15,6 +15,42 @@ k   PCA         accuracy    time
 3   1,000
 1   1,000
 
+SVM: No PCA
+Linear SVM results
+Predicted   -1    0   1
+Actual
+-1          95  120  81
+ 0         112  132  68
+ 1         105  123  65
+
+Accuracy: 0.324084350721
+
+Polynomial SVM results
+Predicted   -1    0    1
+Actual
+-1          85   93  118
+ 0         102  112   98
+ 1          94   87  112
+
+Accuracy: 0.34295227525
+
+RBF SVM results
+Predicted    0
+Actual
+-1         296
+ 0         312
+ 1         293
+
+Accuracy: 0.34628190899
+
+starting rf
+Predicted   -1    0    1
+Actual
+-1         379  285  246
+ 0         333  328  246
+ 1         365  255  275
+
+Accuracy: 0.36209439528
 
 
 Multinomial Logistic

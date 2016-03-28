@@ -165,7 +165,7 @@ def process_duplicate_image(match_id, dupe_id, dupe_hash):
                                  dupe['created_ts'], dupe_hash,
                                  int(dupe['unclear_sentiment'])))
         except Exception as err:
-            print(err + ' on record ' + str(dupe_id))
+            print(str(err) + ' on record ' + str(dupe_id))
 
         sql = 'DELETE FROM Original_tweets ' \
               'WHERE tweet_id = %s'
