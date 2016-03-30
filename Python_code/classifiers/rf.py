@@ -6,7 +6,7 @@ Random Classifier of image data
 
 from Python_code.classifiers.preprocessing import img_preprocess as prep
 from sklearn.decomposition import RandomizedPCA
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, classification_report
 from sklearn.cross_validation import train_test_split
 import pandas as pd
 import time
@@ -24,7 +24,7 @@ train_x, test_x, train_y, test_y = train_test_split(
 # train_x = pca.fit_transform(train_x)
 # test_x = pca.transform(test_x)
 
-print('starting rf')
+print('starting rf\n')
 
 start_time = time.time()
 
@@ -34,9 +34,13 @@ model.fit(train_x, train_y)
 
 pred_y = model.predict(test_x)
 
+print('Confusion Matrix')
+print('================\n')
 print(pd.crosstab(test_y, model.predict(test_x), rownames=['Actual'],
                   colnames=['Predicted']))
 
 print('\nAccuracy: ' + str(accuracy_score(test_y, pred_y)))
-
+print()
+print(classification_report(test_y, pred_y))
+print()
 print('processing time' + str(time.time() - start_time))

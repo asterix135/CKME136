@@ -28,7 +28,7 @@ def plot_confusion_matrix(cm, title='Confusion matrix', cmap=plt.cm.Blues):
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
 
-NUM_PER_CATEGORY = 3000
+NUM_PER_CATEGORY = 5500
 
 print('loading data....')
 print(str(NUM_PER_CATEGORY) + ' examples per category')

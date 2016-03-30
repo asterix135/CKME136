@@ -1,22 +1,11 @@
-KNN on Twitter images
-n = 500
-size=(250,250)
+/Library/Frameworks/Python.framework/Versions/3.5/bin/python3.5 /Users/christophergraham/Documents/School/Ryerson_program/CKME136/Python_code/classifiers/svm.py
+starting svm
 
-k   PCA         accuracy    time
-5   all
-5   100,000
-5   10,000
-5   1,000
-5   100
-5   10
-15  1,000
-9   1,000
-7   1,000
-3   1,000
-1   1,000
-
-SVM: No PCA
 Linear SVM results
+==================
+
+Confusion Matrix
+----------------
 Predicted   -1    0   1
 Actual
 -1          95  120  81
@@ -25,7 +14,22 @@ Actual
 
 Accuracy: 0.324084350721
 
+             precision    recall  f1-score   support
+
+         -1       0.30      0.32      0.31       296
+          0       0.35      0.42      0.38       312
+          1       0.30      0.22      0.26       293
+
+avg / total       0.32      0.32      0.32       901
+
+
+processing time2762.58562207222
+
 Polynomial SVM results
+======================
+
+Confusion Matrix
+----------------
 Predicted   -1    0    1
 Actual
 -1          85   93  118
@@ -34,7 +38,22 @@ Actual
 
 Accuracy: 0.34295227525
 
+             precision    recall  f1-score   support
+
+         -1       0.30      0.29      0.29       296
+          0       0.38      0.36      0.37       312
+          1       0.34      0.38      0.36       293
+
+avg / total       0.34      0.34      0.34       901
+
+
+processing time1762.4103410243988
+
 RBF SVM results
+===============
+
+Confusion Matrix
+----------------
 Predicted    0
 Actual
 -1         296
@@ -43,7 +62,30 @@ Actual
 
 Accuracy: 0.34628190899
 
+             precision    recall  f1-score   support
+
+         -1       0.00      0.00      0.00       296
+          0       0.35      1.00      0.51       312
+          1       0.00      0.00      0.00       293
+
+avg / total       0.12      0.35      0.18       901
+
+
+processing time2085.831077814102
+/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/site-packages/sklearn/metrics/classification.py:1074: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples.
+  'precision', 'predicted', average, warn_for)
+
+Process finished with exit code 0
+
+
+Random Forest
+
+/Library/Frameworks/Python.framework/Versions/3.5/bin/python3.5 /Users/christophergraham/Documents/School/Ryerson_program/CKME136/Python_code/classifiers/rf.py
 starting rf
+
+Confusion Matrix
+================
+
 Predicted   -1    0    1
 Actual
 -1         379  285  246
@@ -52,180 +94,58 @@ Actual
 
 Accuracy: 0.36209439528
 
-
-Multinomial Logistic
-n = 500
-size=(250,250)
-
-PCA         accuracy    time
-all         0.3444
-100,000
-10,000
-1,000
-100
-10
-
-SVM
-n = 500
-size=(250,250)
-
-
-
-
-RF
-n = 500
-size=(250,250)
-
-
-CNN:
-
-Timing:
-N   TT  PT
-10  165
-20  270     128
-40  657     281
-100 3968    1933
-250 4052
-
-n=20
              precision    recall  f1-score   support
 
-         -1       0.67      0.44      0.53         9
-          0       1.00      1.00      1.00         3
-          1       0.29      0.50      0.36         4
+         -1       0.35      0.42      0.38       910
+          0       0.38      0.36      0.37       907
+          1       0.36      0.31      0.33       895
 
-avg / total       0.63      0.56      0.58        16
-
-
-Accuracy score
-==============
-0.5625
-
-Confusion Matrix
-================
-[[4 0 5]
- [0 3 0]
- [2 0 2]]
+avg / total       0.36      0.36      0.36      2712
 
 
-/Library/Frameworks/Python.framework/Versions/3.5/bin/python3.5 /Users/christophergraham/Documents/School/Ryerson_program/CKME136/Python_code/classifiers/neural_net/nn_theano_v3.py
-loading data....
-100 examples per category
-Total data load time:
----------------------
-23.963279008865356
-
-starting nn....
-Total transform time:
----------------------
-3968.191596031189
-
-starting predictions....
-total prediction time
----------------------
-1933.841835975647
-
-             precision    recall  f1-score   support
-
-         -1       0.32      0.39      0.35        31
-          0       0.49      0.53      0.51        32
-          1       0.48      0.33      0.39        33
-
-avg / total       0.43      0.42      0.42        96
-
-
-Accuracy score
-==============
-0.416666666667
-
-Confusion Matrix
-================
-[[12 10  9]
- [12 17  3]
- [14  8 11]]
-/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/site-packages/matplotlib/tight_layout.py:222: UserWarning: tight_layout : falling back to Agg renderer
-  warnings.warn("tight_layout : falling back to Agg renderer")
-
-  /Library/Frameworks/Python.framework/Versions/3.5/bin/python3.5 /Users/christophergraham/Documents/School/Ryerson_program/CKME136/Python_code/classifiers/neural_net/nn_theano_v3.py
-loading data....
-1000 examples per category
-Total data load time:
----------------------
-241.47923398017883
-
-starting nn....
-Total transform time:
----------------------
-15321.21269106865
-
-starting predictions....
-total prediction time
----------------------
-6525.552937030792
-
-             precision    recall  f1-score   support
-
-         -1       0.35      0.39      0.37       290
-          0       0.43      0.38      0.40       328
-          1       0.30      0.31      0.30       283
-
-avg / total       0.36      0.36      0.36       901
-
-
-Accuracy score
-==============
-0.360710321865
-
-Confusion Matrix
-================
-[[114  83  93]
- [ 94 124 110]
- [116  80  87]]
-/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/site-packages/matplotlib/tight_layout.py:222: UserWarning: tight_layout : falling back to Agg renderer
-  warnings.warn("tight_layout : falling back to Agg renderer")
-sh: -c: line 0: unexpected EOF while looking for matching `"'
-sh: -c: line 1: syntax error: unexpected end of file
+processing time148.9436628818512
 
 Process finished with exit code 0
 
-/Library/Frameworks/Python.framework/Versions/3.5/bin/python3.5 /Users/christophergraham/Documents/School/Ryerson_program/CKME136/Python_code/classifiers/neural_net/nn_theano_v3.py
-loading data....
-250 examples per category
-Total data load time:
----------------------
-56.03823399543762
-
-starting nn....
-Total transform time:
----------------------
-4052.6806819438934
-
-starting predictions....
-total prediction time
-/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/site-packages/matplotlib/tight_layout.py:222: UserWarning: tight_layout : falling back to Agg renderer
----------------------
-  warnings.warn("tight_layout : falling back to Agg renderer")
-1794.8686380386353
-
-             precision    recall  f1-score   support
-
-         -1       0.26      0.34      0.29        67
-          0       0.43      0.38      0.40        93
-          1       0.42      0.36      0.39        77
-
-avg / total       0.38      0.36      0.37       237
 
 
-Accuracy score
-==============
-0.362869198312
-
-Confusion Matrix
-================
-[[23 28 16]
- [35 35 23]
- [31 18 28]]
-sh: -c: line 0: unexpected EOF while looking for matching `"'
-sh: -c: line 1: syntax error: unexpected end of file
+/Library/Frameworks/Python.framework/Versions/3.5/bin/python3.5 /Users/christophergraham/Documents/School/Ryerson_program/CKME136/Python_code/classifiers/neural_net/mlp.py
+... loading data ...
+... building the model ...
+/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/site-packages/theano/tensor/signal/downsample.py:6: UserWarning: downsample module has been moved to the theano.tensor.signal.pool module.
+  "downsample module has been moved to the theano.tensor.signal.pool module.")
+... training ...
+epoch 1, minibatch 366/366, validation error 66.719745 %
+     epoch 1, minibatch 366/366, test error of best model 67.656250 %
+epoch 2, minibatch 366/366, validation error 66.751592 %
+epoch 3, minibatch 366/366, validation error 66.751592 %
+epoch 4, minibatch 366/366, validation error 66.751592 %
+epoch 5, minibatch 366/366, validation error 66.783439 %
+epoch 6, minibatch 366/366, validation error 66.783439 %
+epoch 7, minibatch 366/366, validation error 66.783439 %
+epoch 8, minibatch 366/366, validation error 66.751592 %
+epoch 9, minibatch 366/366, validation error 66.751592 %
+epoch 10, minibatch 366/366, validation error 66.751592 %
+epoch 11, minibatch 366/366, validation error 66.751592 %
+epoch 12, minibatch 366/366, validation error 66.719745 %
+epoch 13, minibatch 366/366, validation error 66.719745 %
+epoch 14, minibatch 366/366, validation error 66.687898 %
+     epoch 14, minibatch 366/366, test error of best model 67.656250 %
+epoch 15, minibatch 366/366, validation error 66.656051 %
+     epoch 15, minibatch 366/366, test error of best model 67.656250 %
+epoch 16, minibatch 366/366, validation error 66.656051 %
+epoch 17, minibatch 366/366, validation error 66.687898 %
+epoch 18, minibatch 366/366, validation error 66.687898 %
+epoch 19, minibatch 366/366, validation error 66.656051 %
+epoch 20, minibatch 366/366, validation error 66.656051 %
+epoch 21, minibatch 366/366, validation error 66.656051 %
+epoch 22, minibatch 366/366, validation error 66.656051 %
+epoch 23, minibatch 366/366, validation error 66.656051 %
+epoch 24, minibatch 366/366, validation error 66.656051 %
+epoch 25, minibatch 366/366, validation error 66.656051 %
+epoch 26, minibatch 366/366, validation error 66.719745 %
+epoch 27, minibatch 366/366, validation error 66.687898 %
+Optimization complete.  Best validation score of 66.656051 % obtained at iteration 5490, with test performance 67.656250 %
+The code for file mlp.py ran for 26.64m
 
 Process finished with exit code 0

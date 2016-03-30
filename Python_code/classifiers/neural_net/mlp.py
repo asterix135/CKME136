@@ -199,7 +199,7 @@ def mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
     :param batch_size: size of bach processed
     :param n_hidden: number of hidden outputs
     """
-    datasets = load_data(3500)
+    datasets = load_data(5000)
 
     train_set_x, train_set_y = datasets[0]
     valid_set_x, valid_set_y = datasets[1]

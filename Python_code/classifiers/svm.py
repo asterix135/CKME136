@@ -6,7 +6,7 @@ Support Vector Machine Classifier of image data
 
 from Python_code.classifiers.preprocessing import img_preprocess as prep
 from sklearn.decomposition import RandomizedPCA
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, classification_report
 from sklearn.cross_validation import train_test_split
 import pandas as pd
 import time
@@ -38,11 +38,17 @@ model.fit(train_x, train_y)
 
 pred_y = model.predict(test_x)
 
-print('Linear SVM results')
+print('\nLinear SVM results')
+print('==================\n')
+print('Confusion Matrix')
+print('----------------')
 print(pd.crosstab(test_y, model.predict(test_x), rownames=['Actual'],
                   colnames=['Predicted']))
 
 print('\nAccuracy: ' + str(accuracy_score(test_y, pred_y)))
+print()
+print(classification_report(test_y, pred_y))
+print()
 
 print('processing time' + str(time.time() - start_time))
 
@@ -53,11 +59,17 @@ model.fit(train_x, train_y)
 
 pred_y = model.predict(test_x)
 
-print('Polynomial SVM results')
+print('\nPolynomial SVM results')
+print('======================\n')
+print('Confusion Matrix')
+print('----------------')
 print(pd.crosstab(test_y, model.predict(test_x), rownames=['Actual'],
                   colnames=['Predicted']))
 
 print('\nAccuracy: ' + str(accuracy_score(test_y, pred_y)))
+print()
+print(classification_report(test_y, pred_y))
+print()
 
 print('processing time' + str(time.time() - start_time))
 
@@ -67,11 +79,17 @@ model = SVC(kernel='rbf')
 model.fit(train_x, train_y)
 pred_y = model.predict(test_x)
 
-print('RBF SVM results')
+print('\nRBF SVM results')
+print('===============\n')
+print('Confusion Matrix')
+print('----------------')
 print(pd.crosstab(test_y, model.predict(test_x), rownames=['Actual'],
                   colnames=['Predicted']))
 
 print('\nAccuracy: ' + str(accuracy_score(test_y, pred_y)))
+print()
+print(classification_report(test_y, pred_y))
+print()
 
 print('processing time' + str(time.time() - start_time))
 
