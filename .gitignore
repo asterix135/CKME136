@@ -28,8 +28,9 @@ Python_code/sql_vals.py
 nn_model.rda
 *.pkl
 
-# random test data
+# random data
 mnist.pkl.gz
+sample_image_tweet.pdf
 
 
 ############################################
